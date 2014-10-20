@@ -73,7 +73,7 @@
 				HorizontalAlignment="Stretch" 
 				VerticalAlignment="Top" 
 				ToolTip="Home tab"
-					 IsEnabled="False">
+				IsEnabled="False">
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/book.png"
@@ -85,15 +85,15 @@
 						<RowDefinition Height="1*"/>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False">
+						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False">
 							<DataGrid.Columns >
-								<DataGridCheckBoxColumn Width="30"></DataGridCheckBoxColumn>
-								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150"></DataGridTextColumn>
-								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" ></DataGridTextColumn>
+								<DataGridCheckBoxColumn Width="30"/>
+								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber}"/>
+								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName}"/>
+								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName}"/>
+								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding birth}"/>
+								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber}"/>
+								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" Binding="{Binding peselNumber}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
@@ -123,15 +123,15 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False">
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
 							<DataGrid.Columns >
-								<DataGridCheckBoxColumn Width="30"></DataGridCheckBoxColumn>
-								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="False" Width="50" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150"></DataGridTextColumn>
-								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" ></DataGridTextColumn>
-								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" ></DataGridTextColumn>
+								<DataGridCheckBoxColumn Width="30"/>
+								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber}"/>
+								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName}"/>
+								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName}"/>
+								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth}"/>
+								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber}"/>
+								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>

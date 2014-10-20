@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace projektZaliczeniowy
 {
-	public class dataBaseXML
+	public class DataBaseXML
 	{
 		public XmlDocument dataBaseFile;
 		public XDocument dataBaseFileX; 
@@ -18,7 +18,7 @@ namespace projektZaliczeniowy
 		/// konstruktor dla istniejącej bazy
 		/// </summary>
 		/// <param name="openedPath"></param>
-		public dataBaseXML(string openedPath)
+		public DataBaseXML(string openedPath)
 		{
 			this.dataBasePath = openedPath;
 			try
@@ -31,7 +31,7 @@ namespace projektZaliczeniowy
 				throw ex;
 			}
 		}
-		public dataBaseXML()
+		public DataBaseXML()
 		{
 			try
 			{
@@ -50,7 +50,7 @@ namespace projektZaliczeniowy
 			{
 				this.dataBaseFileX.Element("persons").Add(
 					new XElement("person",
-						new XElement("ID", record.ID),
+						//new XElement("ID", record.ID), TODO: static zapisywany czy nadawany dynamicznie? Raczej dynamicznie? Check-it
 						new XElement("pesel",record.pesel),
 						new XElement("name",record.name),
 						new XElement("familyName",record.familyName),

@@ -23,8 +23,8 @@ namespace projektZaliczeniowy
 	{
 
 		//Zmienne i stałe
-		public logger logMaker = new logger("./");
-		public dataBaseXML mainDBFile;
+		public Logger logMaker = new Logger("./");
+		public DataBaseXML mainDBFile;
 		public List<DBstructure> mainDataBaseList = new List<DBstructure>();
 		public bool fileOpened = false;
 		public bool fileEdited = false;
@@ -75,6 +75,9 @@ namespace projektZaliczeniowy
 					homeTab.IsEnabled = true;
 					editTab.IsEnabled = true;
 					editTab.IsSelected = true;
+					homeDataGrid.ItemsSource = mainDataBaseList;
+					editDataGrid.ItemsSource = mainDataBaseList;
+					editDataGrid.IsEnabled = true;
 
 				}
 				catch (Exception ex)
@@ -107,8 +110,8 @@ namespace projektZaliczeniowy
 			}
 			catch (Exception ex)
 			{
-				MessageBoxResult result = MessageBox.Show(string.Format("Błąd zapisu pliku!\n{0}", ex.ToString()), "Error!", MessageBoxButton.OK, MessageBoxImage.Stop);
-				this.logMaker.logError("Critical error during saving!");
+				MessageBoxResult result = MessageBox.Show(string.Format("Błąd zapisu pliku!\n{0}", ex.ToString()), "Error! Błąd zapisu pliku", MessageBoxButton.OK, MessageBoxImage.Stop);
+				this.logMaker.logError(string.Format("Critical error during saving!\n{0}", ex.Message));
 			}
 		}
 		private void subMenuQuit_click(object sender, RoutedEventArgs e)
@@ -121,7 +124,7 @@ namespace projektZaliczeniowy
 
 		private void dataBaseCreator()
 		{
-			this.mainDBFile = new dataBaseXML();
+			this.mainDBFile = new DataBaseXML();
 			this.logMaker.logInfo("DataBase created");
 			this.fileOpened = true;
 			subMenuSave.IsEnabled = true;
@@ -165,8 +168,10 @@ namespace projektZaliczeniowy
 			{
 				var tmpRecord = addWindow.userRecord();
 				mainDataBaseList.Add(addWindow.userRecord());
+				mainDBFile.addToDataBaseXML(tmpRecord);
 			}
-
+			editDataGrid.Items.Refresh();
+			homeDataGrid.Items.Refresh(); //refresh na datagridzie
 		}
 		#endregion
 	}
