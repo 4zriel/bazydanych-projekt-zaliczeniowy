@@ -23,6 +23,7 @@ namespace projektZaliczeniowy
 		public addRecord()
 		{
 			InitializeComponent();
+			addNameText.Focus();
 		}
 
 		public DBstructure userRecord()
@@ -31,13 +32,16 @@ namespace projektZaliczeniowy
 			try
 			{
 				//TODO: Walidacja etc
-				addedRecord.name = addNameText.Text;
-				addedRecord.familyName = addFamilyText.Text;
-				addedRecord.phone = Convert.ToInt32(addPhoneText.Text);
-				//addedRecord.birthDate = Convert.ToDateTime(addBirthText.Text);
-				addedRecord.pesel = Convert.ToInt32(addPeselText.Text);
+				addedRecord = new DBstructure
+				{
+					firstName = addNameText.Text,
+					lastName = addFamilyText.Text,
+					phoneNumber = Convert.ToInt32(addPhoneText.Text),
+					birth = DateTime.Parse(addBirthText.Text),
+					peselNumber= Convert.ToInt32(addPeselText.Text)
+				};				
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				throw ex;
 			}
@@ -52,8 +56,26 @@ namespace projektZaliczeniowy
 
 		private void addButtonAdd_Click(object sender, RoutedEventArgs e)
 		{
+			addNewRecord();
+		}
+
+		private void addNewRecord()
+		{
 			userRecord();
 			this.added = true;
+			this.Close();
+		}
+
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter)
+			{
+				addNewRecord();
+			}
+			else if(e.Key == Key.Escape)
+			{
+				this.Close();
+			}
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace projektZaliczeniowy
 {
-	public class logger
+	public class Logger
 	{
 		private string logFileName = "_LOG_" + DateTime.Today.ToShortDateString();
 		private string logPath = string.Empty;
@@ -15,14 +15,14 @@ namespace projektZaliczeniowy
 		public FileStream logFile;
 		public string logFilePath = string.Empty;
 
-		public logger(string path)
+		public Logger(string path)
 		{
 			this.logPath = path;
 			this.createLogFile(logPath);
 			//this.readLogFile(this.logFile);
 			this.logInfo("Logger initialization completed");
 		}
-		~logger()
+		~Logger()
 		{
 			this.logInfo("Saving log file");
 			this.saveLogFile(this.logFilePath);
@@ -80,6 +80,7 @@ namespace projektZaliczeniowy
 			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
 			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
 			this.logList.Add(string.Format("{1}\tINFO\t{0}", info, timeS));
+			this.saveLogFile(this.logFilePath);
 		}
 		public void logError(string error)
 		{
@@ -87,6 +88,7 @@ namespace projektZaliczeniowy
 			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
 			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
 			this.logList.Add(string.Format("{1}\tERROR\t{0}", error, timeS));
+			this.saveLogFile(this.logFilePath);
 		}
 		public void logWarning(string warning)
 		{
@@ -94,6 +96,7 @@ namespace projektZaliczeniowy
 			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
 			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
 			this.logList.Add(string.Format("{1}\tWARNING\t{0}", warning, timeS));
+			this.saveLogFile(this.logFilePath);
 		}
 	}
 }

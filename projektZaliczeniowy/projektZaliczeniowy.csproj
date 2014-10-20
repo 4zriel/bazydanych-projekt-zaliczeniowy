@@ -71,9 +71,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="dataBaseXML.cs" />
+    <Compile Include="DataBaseXML.cs" />
     <Compile Include="DBstructure.cs" />
-    <Compile Include="logger.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
