@@ -14,6 +14,20 @@ namespace projektZaliczeniowy
 		public List<string> logList = new List<string>();
 		public FileStream logFile;
 		public string logFilePath = string.Empty;
+		private static Logger instance;
+
+		public static Logger logInstance
+		{
+			get
+			{
+				if (instance == null)
+				{
+					instance = new Logger("./");
+				}
+				return instance;
+			}
+		}
+
 
 		public Logger(string path)
 		{

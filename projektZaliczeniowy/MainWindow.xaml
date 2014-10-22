@@ -88,12 +88,12 @@
 						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False">
 							<DataGrid.Columns >
 								<DataGridCheckBoxColumn Width="30"/>
-								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber}"/>
-								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName}"/>
-								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName}"/>
-								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding birth}"/>
-								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber}"/>
-								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" Binding="{Binding peselNumber}"/>
+								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
@@ -123,15 +123,15 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
 							<DataGrid.Columns >
 								<DataGridCheckBoxColumn Width="30"/>
-								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber}"/>
-								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName}"/>
-								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName}"/>
-								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth}"/>
-								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber}"/>
-								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber}"/>
+								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>

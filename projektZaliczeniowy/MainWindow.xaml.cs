@@ -23,7 +23,6 @@ namespace projektZaliczeniowy
 	{
 
 		//Zmienne i stałe
-		public Logger logMaker = new Logger("./");
 		public DataBaseXML mainDBFile;
 		public List<DBstructure> mainDataBaseList = new List<DBstructure>();
 		public bool fileOpened = false;
@@ -34,8 +33,8 @@ namespace projektZaliczeniowy
 		public MainWindow()
 		{			
 			InitializeComponent();
-			logMaker.logInfo("Initialization completed");
-			logMaker.logInfo("To start using application, select Create new or Open from File menu");
+			Logger.logInstance.logInfo("Initialization completed");
+			Logger.logInstance.logInfo("To start using application, select [Create new] or [Open] from [File] menu");
 			logTab.IsSelected = true;
 		}
 
@@ -46,7 +45,7 @@ namespace projektZaliczeniowy
 			{
 				listBoxForLogs.Items.Clear();
 			}
-			foreach (var item in this.logMaker.logList)
+			foreach (var item in Logger.logInstance.logList)
 			{
 				listBoxForLogs.Items.Add(item);
 			}
@@ -60,7 +59,7 @@ namespace projektZaliczeniowy
 				{
 					if (refreshLogTab())
 					{
-						this.logMaker.logInfo("LogTab refreshed");
+						Logger.logInstance.logInfo("LogTab refreshed");
 					}
 				}
 			}
@@ -83,7 +82,7 @@ namespace projektZaliczeniowy
 				catch (Exception ex)
 				{
 					MessageBoxResult result = MessageBox.Show(string.Format("Error during creation process! \n{0}", ex.ToString()), "Error!", MessageBoxButton.OK, MessageBoxImage.Stop);
-					this.logMaker.logError("Critical error during creating DB process!");
+					Logger.logInstance.logError("Critical error during creating DB process!");
 				}
 			}
 			else
@@ -92,11 +91,11 @@ namespace projektZaliczeniowy
 				if (result == MessageBoxResult.Yes)
 				{
 					dataBaseCreator();
-					this.logMaker.logWarning("User destroy his DB and create new one...");
+					Logger.logInstance.logWarning("User destroy his DB and create new one...");
 				}
 				else
 				{
-					this.logMaker.logInfo("User try to create new one...");
+					Logger.logInstance.logInfo("User try to create new one...");
 				}
 			}
 
@@ -106,12 +105,12 @@ namespace projektZaliczeniowy
 			try
 			{
 				saveFileMenuDialog();
-				this.logMaker.logInfo("DataBase file saved");
+				Logger.logInstance.logInfo("DataBase file saved");
 			}
 			catch (Exception ex)
 			{
 				MessageBoxResult result = MessageBox.Show(string.Format("Błąd zapisu pliku!\n{0}", ex.ToString()), "Error! Błąd zapisu pliku", MessageBoxButton.OK, MessageBoxImage.Stop);
-				this.logMaker.logError(string.Format("Critical error during saving!\n{0}", ex.Message));
+				Logger.logInstance.logError(string.Format("Critical error during saving!\n{0}", ex.Message));
 			}
 		}
 		private void subMenuQuit_click(object sender, RoutedEventArgs e)
@@ -125,7 +124,7 @@ namespace projektZaliczeniowy
 		private void dataBaseCreator()
 		{
 			this.mainDBFile = new DataBaseXML();
-			this.logMaker.logInfo("DataBase created");
+			Logger.logInstance.logInfo("DataBase created");
 			this.fileOpened = true;
 			subMenuSave.IsEnabled = true;
 		}
@@ -167,7 +166,7 @@ namespace projektZaliczeniowy
 			if (addWindow.added)
 			{
 				var tmpRecord = addWindow.userRecord();
-				mainDataBaseList.Add(addWindow.userRecord());
+				mainDataBaseList.Add(tmpRecord);
 				mainDBFile.addToDataBaseXML(tmpRecord);
 			}
 			editDataGrid.Items.Refresh();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,38 +21,45 @@ namespace projektZaliczeniowy
 	public partial class addRecord : Window
 	{
 		public bool added = false;
+		private int counter = 0;
 		public addRecord()
 		{
 			InitializeComponent();
 			addNameText.Focus();
+			Logger.logInstance.logInfo("addRecord window initialization completed");
 		}
 
 		public DBstructure userRecord()
 		{
-			DBstructure addedRecord = new DBstructure();
+			//DBstructure addedRecord = new DBstructure(counter);
 			try
 			{
 				//TODO: Walidacja etc
-				addedRecord = new DBstructure
+				string formatDate = "dd MM yyyy";
+				DBstructure addedRecord = new DBstructure(counter)
 				{
 					firstName = addNameText.Text,
 					lastName = addFamilyText.Text,
 					phoneNumber = Convert.ToInt32(addPhoneText.Text),
-					birth = DateTime.Parse(addBirthText.Text),
+					birth = addBirthText.DisplayDate,//DateTime.ParseExact(addBirthText.Text, formatDate, CultureInfo.InvariantCulture),
 					peselNumber= Convert.ToInt32(addPeselText.Text)
-				};				
+				};
+				Logger.logInstance.logInfo(string.Format("User added record with:\nFN:{0}\tN:{1}\tPh:{2}\tB:{3}\tP:{4}",addedRecord.lastName,addedRecord.firstName,addedRecord.phoneNumber,addedRecord.birth,addedRecord.peselNumber));
+				this.counter++;
+				return addedRecord;
 			}
 			catch (Exception ex)
 			{
-				throw ex;
-			}
-			return addedRecord;
+				Logger.logInstance.logError(string.Format("Error during creation of new record!\n{0}",ex.ToString()));
+				return new DBstructure(counter);
+			}			
 		}
 
 		private void addButtoncancel_Click(object sender, RoutedEventArgs e)
 		{
 			this.added = false;
 			this.Close();
+			Logger.logInstance.logInfo("Adding new record canceled");
 		}
 
 		private void addButtonAdd_Click(object sender, RoutedEventArgs e)

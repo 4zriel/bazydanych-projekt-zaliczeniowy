@@ -10,7 +10,6 @@ namespace projektZaliczeniowy
 {
 	public class DataBaseXML
 	{
-		public XmlDocument dataBaseFile;
 		public XDocument dataBaseFileX; 
 		public string dataBasePath = string.Empty;
 
@@ -18,25 +17,14 @@ namespace projektZaliczeniowy
 		/// konstruktor dla istniejącej bazy
 		/// </summary>
 		/// <param name="openedPath"></param>
-		public DataBaseXML(string openedPath)
-		{
-			this.dataBasePath = openedPath;
-			try
-			{
-				this.dataBaseFile = new XmlDocument();
-				this.dataBaseFile.Load(dataBasePath);
-			}
-			catch (Exception ex) 
-			{
-				throw ex;
-			}
-		}
+
 		public DataBaseXML()
 		{
 			try
 			{
 				this.dataBaseFileX = new XDocument(
-					new XDeclaration("1.0", "utf-8", "yes"));	
+					new XDeclaration("1.0", "utf-8", "yes"),
+					new XElement("persons"));	
 			}
 			catch (Exception ex)
 			{
@@ -51,11 +39,11 @@ namespace projektZaliczeniowy
 				this.dataBaseFileX.Element("persons").Add(
 					new XElement("person",
 						//new XElement("ID", record.ID), TODO: static zapisywany czy nadawany dynamicznie? Raczej dynamicznie? Check-it
-						new XElement("pesel",record.pesel),
-						new XElement("name",record.name),
-						new XElement("familyName",record.familyName),
-						new XElement("birthDate",record.birthDate),
-						new XElement("phone",record.phone)
+						new XElement("pesel",record.peselNumber),
+						new XElement("name",record.firstName),
+						new XElement("familyName",record.lastName),
+						new XElement("birthDate",record.birth),
+						new XElement("phone",record.phoneNumber)
 						)
 					);
 			}
@@ -68,7 +56,6 @@ namespace projektZaliczeniowy
 		internal void Save(string p)
 		{
 			this.dataBaseFileX.Save(p);
-			//this.dataBaseFile.Save(p);
 		}
 	}
 }
