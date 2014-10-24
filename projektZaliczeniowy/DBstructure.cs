@@ -10,21 +10,19 @@ namespace projektZaliczeniowy
 	public class DBstructure : INotifyPropertyChanged 
 	{
 
-		private static int ID = 0;
+		private static int globalIdCounter = 0;
 		private string name;
 		private string familyName;
 		private DateTime birthDate;
 		private int phone;
 		private int pesel;
 		
-		public DBstructure(int counter)
+		public DBstructure()
 		{
-			ID = counter;
+			globalIdCounter++;
+			Id = globalIdCounter;
 		}
-		public int idNumber
-		{
-			get { return ID; }
-		}
+		public int Id { get; set; }
 		public string firstName
 		{
 			get
