@@ -9,108 +9,63 @@ namespace projektZaliczeniowy
 {
 	public class Logger
 	{
-		private string logFileName = "_LOG_" + DateTime.Today.ToShortDateString();
-		private string logPath = string.Empty;
-		public List<string> logList = new List<string>();
-		public FileStream logFile;
-		public string logFilePath = string.Empty;
-		private static Logger instance;
+		#region Basic
+		private readonly string logFilePath = Path.Combine("logs", DateTime.Today.ToShortDateString() + ".log");
 
-		public static Logger logInstance
+		// binding?
+		public List<string> logList = new List<string>();		
+
+		private static Logger instance;
+		public static Logger LogInstance
 		{
 			get
 			{
 				if (instance == null)
-				{
-					instance = new Logger("./");
-				}
+					instance = new Logger();
 				return instance;
 			}
 		}
-
-
-		public Logger(string path)
+		private Logger()
 		{
-			this.logPath = path;
-			this.createLogFile(logPath);
-			//this.readLogFile(this.logFile);
-			this.logInfo("Logger initialization completed");
-		}
-		~Logger()
-		{
-			this.logInfo("Saving log file");
-			this.saveLogFile(this.logFilePath);
+			this.LogInfo("Logger initialization completed");
 		}
 
-		private void saveLogFile(string logFile)
+		private void WiteLog(string message)
 		{
-			try
-			{
-				StreamWriter logSaveToFile = new StreamWriter(logFile);
-				foreach (var item in this.logList)
-				{
-					string tmpLogText = item.ToString();
-					logSaveToFile.WriteLine(tmpLogText);
-				}
-				logSaveToFile.Close();
-			}
-			catch
-			{
-				Console.WriteLine("CRITICAL ERROR during saveing logfile");
+			if (!Directory.Exists(Path.GetDirectoryName(logFilePath)))
+				Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
+			using (var logFile = new FileStream(logFilePath, FileMode.Append))
+			using (var logSaveToFile = new StreamWriter(logFile))
+			{				
+				logSaveToFile.WriteLine(message);
 			}
 		}
 
-		private void createLogFile(string logPath)
+		private static string GetTime()
 		{
-			try
-			{	
-				this.logFilePath = logPath + "/" + logFileName;
-				this.logFile = new FileStream(logFilePath, FileMode.OpenOrCreate); //createnew czy też open
-				StreamReader sr = new StreamReader(logFile);
-				//for (int i= 0; ; i++)
-				//{
-				//	string tmpLine = string.Empty;
-				//	tmpLine = sr.ReadLine();
-				//	if (tmpLine == null)
-				//		break;
-				//	else
-				//		this.logList.Add(tmpLine);
-				//}
-			}
-			catch  
-			{
-				Console.WriteLine("CRITCAL ERROR: trying to create/open log file");
-			}
+			return DateTime.Now.ToString("yyyy:MM:dd hh:mm:ss:fff");
+		}
+		#endregion
+
+		public void LogInfo(string info)
+		{
+			string msg = string.Format("{1}\tINFO\t{0}", info, GetTime());
+			this.logList.Add(msg);
+			this.WiteLog(msg);
 		}
 
-		private void readLogFile(FileStream file)
+		public void LogError(string error)
 		{
-			StreamReader logReader = new StreamReader(file);
+			string msg = string.Format("{1}\tERROR\t{0}", error, GetTime());
+			this.logList.Add(msg);
+			this.WiteLog(msg);
 		}
 
-		public void logInfo(string info)
+		public void LogWarning(string warning)
 		{
-			DateTime dt = DateTime.Now;
-			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
-			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
-			this.logList.Add(string.Format("{1}\tINFO\t{0}", info, timeS));
-			this.saveLogFile(this.logFilePath);
-		}
-		public void logError(string error)
-		{
-			DateTime dt = DateTime.Now;
-			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
-			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
-			this.logList.Add(string.Format("{1}\tERROR\t{0}", error, timeS));
-			this.saveLogFile(this.logFilePath);
-		}
-		public void logWarning(string warning)
-		{
-			DateTime dt = DateTime.Now;
-			string timeS = dt.ToString("yyyy:MM:dd hh:mm:ss:fff");
-			//dt = string.Format("{0yyyy:MM:dd hh:mm:ss:fff}", dt);
-			this.logList.Add(string.Format("{1}\tWARNING\t{0}", warning, timeS));
-			this.saveLogFile(this.logFilePath);
+			string msg = string.Format("{1}\tWARNING\t{0}", warning, GetTime());
+			this.logList.Add(msg);
+			this.WiteLog(msg);
 		}
 	}
 }

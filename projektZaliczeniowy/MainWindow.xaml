@@ -44,13 +44,13 @@
 		</Grid.RowDefinitions>
 
 		<!-- Menu and application header -->
-		<Menu Grid.Row="0" HorizontalAlignment="Stretch" Height="23" VerticalAlignment="Top" Width="794" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50">
-			<MenuItem x:Name="menuFile" Header="File" Width="28" Background="#FF4E4E50" BorderBrush="#FF4E4E50">
-				<MenuItem x:Name="subMenuCreate" Header="Create new database" HorizontalAlignment="Stretch" Width="140" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuCreate_Click"/>
-				<MenuItem x:Name="subMenuOpen" Header="Open file..." HorizontalAlignment="Stretch" Width="140" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuOpen_click"/>
-				<MenuItem x:Name="subMenuSave" Header="Save" HorizontalAlignment="Stretch" Width="140" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuSave_Click" IsEnabled="False"/>
-				<Separator HorizontalAlignment="Left" Height="8" Width="140"/>
-				<MenuItem x:Name="subMenuQuit" Header="Quit" HorizontalAlignment="Stretch" Width="140" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuQuit_click"/>
+		<Menu Grid.Row="0" HorizontalAlignment="Stretch" Height="23" VerticalAlignment="Top" Width="794" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" ClipToBounds="True" MinWidth="50">
+			<MenuItem x:Name="menuFile" Header="File" Background="#FF4E4E50" BorderBrush="#FF4E4E50" MinWidth="50">
+				<MenuItem x:Name="subMenuCreate" Header="Create new database" HorizontalAlignment="Stretch" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuCreate_Click"/>
+				<MenuItem x:Name="subMenuOpen" Header="Open file..." HorizontalAlignment="Stretch" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuOpen_click"/>
+				<MenuItem x:Name="subMenuSave" Header="Save" HorizontalAlignment="Stretch" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuSave_Click" IsEnabled="False"/>
+				<Separator HorizontalAlignment="Left" Height="2"/>
+				<MenuItem x:Name="subMenuQuit" Header="Quit" HorizontalAlignment="Stretch" Background="#FF4E4E50" Foreground="White" BorderBrush="#FF4E4E50" Click="subMenuQuit_click"/>
 			</MenuItem>
 			<MenuItem x:Name="subMenuNew" Header="MenuItem"/>
 			<MenuItem x:Name="menuHelp" Header="Help" Background="#FF4E4E50" Foreground="White">
@@ -88,7 +88,7 @@
 						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False">
 							<DataGrid.Columns >
 								<DataGridCheckBoxColumn Width="30"/>
-								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
@@ -123,10 +123,10 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False">
 							<DataGrid.Columns >
 								<DataGridCheckBoxColumn Width="30"/>
-								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding idNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="True" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
@@ -177,7 +177,7 @@
 						Stretch="Fill"/>
 				</TabItem.Header>
 				<Grid Background="#FF4E4E50" Margin="0,-3,0,-5">
-					<ListBox x:Name="listBoxForLogs" HorizontalAlignment="Stretch" Height="540" Margin="10,0,0,0" VerticalAlignment="Top" Width="685" IsHitTestVisible="True" />
+					<ListBox x:Name="listBoxForLogs" HorizontalAlignment="Stretch" Height="540" Margin="10,0,0,0" VerticalAlignment="Top" Width="685" IsHitTestVisible="True"/>
 				</Grid>
 			</TabItem>
 		</TabControl>
