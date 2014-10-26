@@ -11,10 +11,9 @@ namespace projektZaliczeniowy
 	{
 		#region Basic
 		private readonly string logFilePath = Path.Combine("logs", DateTime.Today.ToShortDateString() + ".log");
+		public List<string> logList = new List<string>(); //TODO: binding?
 
-		// binding?
-		public List<string> logList = new List<string>();		
-
+		#region Singleton
 		private static Logger instance;
 		public static Logger LogInstance
 		{
@@ -28,7 +27,8 @@ namespace projektZaliczeniowy
 		private Logger()
 		{
 			this.LogInfo("Logger initialization completed");
-		}
+		} 
+		#endregion
 
 		private void WiteLog(string message)
 		{
@@ -43,29 +43,29 @@ namespace projektZaliczeniowy
 
 		private static string GetTime()
 		{
-			return DateTime.Now.ToString("yyyy:MM:dd hh:mm:ss:fff");
+			return DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss:fff");
 		}
 		#endregion
 
+		#region logging methods
 		public void LogInfo(string info)
 		{
 			string msg = string.Format("{1}\tINFO\t{0}", info, GetTime());
 			this.logList.Add(msg);
 			this.WiteLog(msg);
 		}
-
 		public void LogError(string error)
 		{
 			string msg = string.Format("{1}\tERROR\t{0}", error, GetTime());
 			this.logList.Add(msg);
 			this.WiteLog(msg);
 		}
-
 		public void LogWarning(string warning)
 		{
 			string msg = string.Format("{1}\tWARNING\t{0}", warning, GetTime());
 			this.logList.Add(msg);
 			this.WiteLog(msg);
-		}
+		} 
+		#endregion
 	}
 }
