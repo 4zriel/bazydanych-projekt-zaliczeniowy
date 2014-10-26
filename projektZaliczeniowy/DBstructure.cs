@@ -15,8 +15,9 @@ namespace projektZaliczeniowy
 		private string familyName;
 		private DateTime birthDate;
 		private int phone;
-		private int pesel;
-		
+		private int pesel; //TODO: zmienić na stringi ze względu na długość
+
+		#region GetSet
 		public DBstructure()
 		{
 			globalIdCounter++;
@@ -82,7 +83,8 @@ namespace projektZaliczeniowy
 				this.pesel = value;
 				notifyMe("PESEL");
 			}
-		}
+		} 
+		#endregion
 
 		//autogenerate 
 		public event PropertyChangedEventHandler PropertyChanged;

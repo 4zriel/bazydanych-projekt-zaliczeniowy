@@ -21,56 +21,46 @@ namespace projektZaliczeniowy
 	public partial class addRecord : Window
 	{
 		public bool added = false;
+		public DBstructure addedRecord; //added record by user
+
+		#region Methods
 		public addRecord()
 		{
 			InitializeComponent();
 			addNameText.Focus();
 			Logger.LogInstance.LogInfo("addRecord window initialization completed");
 		}
-
 		public DBstructure userRecord()
 		{
-			//DBstructure addedRecord = new DBstructure(counter);
 			try
 			{
 				//TODO: Walidacja etc
-				DBstructure addedRecord = new DBstructure()
+				this.addedRecord = new DBstructure()
 				{
 					firstName = addNameText.Text,
 					lastName = addFamilyText.Text,
 					phoneNumber = Convert.ToInt32(addPhoneText.Text),
-					birth = addBirthText.DisplayDate,//DateTime.ParseExact(addBirthText.Text, formatDate, CultureInfo.InvariantCulture),
-					peselNumber= Convert.ToInt32(addPeselText.Text)
+					birth = addBirthText.DisplayDate.Date,
+					peselNumber = Convert.ToInt32(addPeselText.Text)
 				};
-				Logger.LogInstance.LogInfo(string.Format("User added record with:\nFamilyName:{0}\tName:{1}\nPhone:{2}\tBirthDate:{3}\tPesel:{4}",addedRecord.lastName,addedRecord.firstName,addedRecord.phoneNumber,addedRecord.birth,addedRecord.peselNumber));
-				return addedRecord;
+				Logger.LogInstance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", addedRecord.lastName, addedRecord.firstName, addedRecord.phoneNumber, addedRecord.birth, addedRecord.peselNumber));
+				return this.addedRecord;
 			}
 			catch (Exception ex)
 			{
-				Logger.LogInstance.LogError(string.Format("Error during creation of new record!\n{0}",ex.ToString()));
+				Logger.LogInstance.LogError(string.Format("Error during creation of new record!\n{0}", ex.ToString()));
 				return new DBstructure();
-			}			
+			}
 		}
-
-		private void addButtoncancel_Click(object sender, RoutedEventArgs e)
-		{
-			this.added = false;
-			this.Close();
-			Logger.LogInstance.LogInfo("Adding new record canceled");
-		}
-
-		private void addButtonAdd_Click(object sender, RoutedEventArgs e)
-		{
-			addNewRecord();
-		}
-
 		private void addNewRecord()
 		{
 			userRecord();
 			this.added = true;
 			this.Close();
-		}
+		} 
+		#endregion
 
+		#region Events
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.Enter)
@@ -79,8 +69,24 @@ namespace projektZaliczeniowy
 			}
 			else if(e.Key == Key.Escape)
 			{
-				this.Close();
+				closeWithoutAdding();
 			}
 		}
+		private void addButtoncancel_Click(object sender, RoutedEventArgs e)
+		{
+			closeWithoutAdding();
+		}
+
+		private void closeWithoutAdding()
+		{
+			this.added = false;
+			this.Close();
+			Logger.LogInstance.LogInfo("Adding new record canceled");
+		}
+		private void addButtonAdd_Click(object sender, RoutedEventArgs e)
+		{
+			addNewRecord();
+		}
+		#endregion
 	}
 }
