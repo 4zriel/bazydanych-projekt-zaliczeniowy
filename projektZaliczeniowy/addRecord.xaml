@@ -3,7 +3,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		Title="Add new record" Height="245" Width="300" ResizeMode="NoResize" ToolTip="Fill this windows to add new record" 
 		Icon="Resources/menu/plus.png" KeyDown="Window_KeyDown"
-		WindowStartupLocation ="CenterScreen">
+		WindowStartupLocation ="CenterOwner">
 	<Grid Background="#FFB6B6B6">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="2.5*"/>
