@@ -126,20 +126,27 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False">
-							<DataGrid.Columns >
-								<DataGridCheckBoxColumn Width="30"/>
-								<DataGridTextColumn x:Name="editID" Header="ID" IsReadOnly="True" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}"/>
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionChanged="editDataGridSelectionChanged" >
+							<DataGrid.Columns ><!--
+								<DataGridTemplateColumn x:Name="editSelected" Header="Select" >
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<CheckBox IsChecked="{Binding isSelected, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>-->								
+								<DataGridTextColumn x:Name="editID" Header="ID" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
 					<Grid Grid.RowSpan="2">
-						<Button Content="Add new Record" HorizontalAlignment="Left" Margin="37,494,0,10" Padding="3" Width="100" Click="editTabAddClick"/>
+						<Button Content="Add new Record" HorizontalAlignment="Left" Margin="40,494,0,10" Padding="3" Width="100" Click="editTabAddClick"/>
+						<Button Content="Edit selected" HorizontalAlignment="Left" Margin="160,494,0,10" Padding="3" Width="100" Click="editSelectedClick" />
 					</Grid>
 				</Grid>
 			</TabItem>

@@ -11,17 +11,17 @@ namespace projektZaliczeniowy
 	{
 		#region Basic
 		private readonly string logFilePath = Path.Combine("logs", DateTime.Today.ToShortDateString() + ".log");
-		public List<string> logList = new List<string>(); //TODO: binding?
+		public List<string> LogList = new List<string>(); //TODO: binding?
 
 		#region Singleton
-		private static Logger instance;
+		private static Logger Instance;
 		public static Logger LogInstance
 		{
 			get
 			{
-				if (instance == null)
-					instance = new Logger();
-				return instance;
+				if (Instance == null)
+					Instance = new Logger();
+				return Instance;
 			}
 		}
 		private Logger()
@@ -51,19 +51,19 @@ namespace projektZaliczeniowy
 		public void LogInfo(string info)
 		{
 			string msg = string.Format("{1}\tINFO\t{0}", info, GetTime());
-			this.logList.Add(msg);
+			this.LogList.Add(msg);
 			this.WiteLog(msg);
 		}
 		public void LogError(string error)
 		{
 			string msg = string.Format("{1}\tERROR\t{0}", error, GetTime());
-			this.logList.Add(msg);
+			this.LogList.Add(msg);
 			this.WiteLog(msg);
 		}
 		public void LogWarning(string warning)
 		{
 			string msg = string.Format("{1}\tWARNING\t{0}", warning, GetTime());
-			this.logList.Add(msg);
+			this.LogList.Add(msg);
 			this.WiteLog(msg);
 		} 
 		#endregion

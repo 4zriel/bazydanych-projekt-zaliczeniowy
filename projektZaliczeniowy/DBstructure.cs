@@ -16,6 +16,9 @@ namespace projektZaliczeniowy
 		private DateTime birthDate;
 		private int phone;
 		private int pesel; //TODO: zmienić na stringi ze względu na długość
+		private bool selected;
+		private bool deleted { get; set; }
+
 
 		#region GetSet
 		public DBstructure()
@@ -84,6 +87,18 @@ namespace projektZaliczeniowy
 				notifyMe("PESEL");
 			}
 		} 
+		public bool isSelected
+		{
+			get
+			{
+				return this.selected;
+			}
+			set
+			{
+				this.selected = value;
+				notifyMe("selected");
+			}
+		}
 		#endregion
 
 		//autogenerate 

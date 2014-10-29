@@ -22,13 +22,13 @@ namespace projektZaliczeniowy
 	public partial class MainWindow : Window
 	{
 		//Zmienne i stałe
-		public DataBaseXML mainDBFile;
-		public List<DBstructure> mainDataBaseList = new List<DBstructure>();
+		public DataBaseXML MainDBXml;
+		public List<DBstructure> MainDataBaseList = new List<DBstructure>();
 		private bool fileOpened = false;
 		private bool fileEdited = false;
 		private bool fileSaved = false;
-		public string dataBasePath = string.Empty;
-		public double version = 0.6;
+		private string dataBasePath = string.Empty;
+		public double Version = 0.6;
 		public MainWindow()
 		{			
 			InitializeComponent();
@@ -43,7 +43,7 @@ namespace projektZaliczeniowy
 		/// </summary>
 		private void dataBaseCreator()
 		{
-			this.mainDBFile = new DataBaseXML();
+			this.MainDBXml = new DataBaseXML();
 			Logger.LogInstance.LogInfo("DataBase created");
 			this.fileOpened = true;			
 		}
@@ -78,7 +78,7 @@ namespace projektZaliczeniowy
 		}
 		private void saveFile(string p)
 		{
-			this.mainDBFile.Save(p);
+			this.MainDBXml.Save(p);
 		}		
 		/// <summary>
 		/// głowna metoda odpowiadająca za odświeżanie tabów
@@ -90,7 +90,7 @@ namespace projektZaliczeniowy
 			{
 				listBoxForLogs.Items.Clear();
 			}
-			foreach (var item in Logger.LogInstance.logList)
+			foreach (var item in Logger.LogInstance.LogList)
 			{
 				listBoxForLogs.Items.Add(item);
 			}
@@ -156,6 +156,10 @@ namespace projektZaliczeniowy
 					}
 				}
 			}
+			else if (e.OriginalSource is DataGridCell)
+			{
+				throw new Exception("TEST");
+			}
 		}
 		private void appIsClosing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
@@ -169,7 +173,6 @@ namespace projektZaliczeniowy
 		#region ClickEvents
 		private void subMenuOpenClick(object sender, RoutedEventArgs e)
 		{
-			//TODO: napisać obsluge dialogu etc
 			OpenFileDialog openDialog = new OpenFileDialog();
 			openDialog.DefaultExt = "*.dbfile";
 			openDialog.FileName = "";
@@ -179,25 +182,26 @@ namespace projektZaliczeniowy
 			{
 				this.dataBasePath = openDialog.FileName;
 				Logger.LogInstance.LogInfo("User opened file...");
-				this.mainDBFile = new DataBaseXML(this.dataBasePath, ref this.mainDataBaseList);
+				this.MainDBXml = new DataBaseXML(this.dataBasePath, ref this.MainDataBaseList);
 				//TODO: dodanie do struktury
 			}
 			this.fileOpened = true;
 			enableTabsAndButton();
 			homeTab.IsSelected = true;
-			homeDataGrid.ItemsSource = mainDataBaseList;
-			editDataGrid.ItemsSource = mainDataBaseList;
+			homeDataGrid.ItemsSource = MainDataBaseList;
+			editDataGrid.ItemsSource = MainDataBaseList;
 		}
 		private void editTabAddClick(object sender, RoutedEventArgs e)
 		{
 			Logger.LogInstance.LogInfo("User tried to add record");
 			var addWindow = new addRecord();
+			addWindow.Owner = this;
 			addWindow.ShowDialog();			
 			if (addWindow.added)
 			{
 				DBstructure tmpRecord = addWindow.addedRecord;
-				mainDataBaseList.Add(tmpRecord);
-				mainDBFile.addToDataBaseXML(tmpRecord);
+				MainDataBaseList.Add(tmpRecord);
+				MainDBXml.addToDataBaseXML(tmpRecord);
 				this.fileEdited = true;
 			}
 			editDataGrid.Items.Refresh();
@@ -222,8 +226,8 @@ namespace projektZaliczeniowy
 					dataBaseCreator();
 					enableTabsAndButton();
 					editTab.IsSelected = true;
-					homeDataGrid.ItemsSource = mainDataBaseList;
-					editDataGrid.ItemsSource = mainDataBaseList;
+					homeDataGrid.ItemsSource = MainDataBaseList;
+					editDataGrid.ItemsSource = MainDataBaseList;
 				}
 				catch (Exception ex)
 				{
@@ -268,9 +272,28 @@ namespace projektZaliczeniowy
 		}
 		private void subMenuAboutClick(object sender, RoutedEventArgs e)
 		{
-			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.version),"About", MessageBoxButton.OK, MessageBoxImage.Information);
+			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.Version),"About", MessageBoxButton.OK, MessageBoxImage.Information);
 			Logger.LogInstance.LogInfo("About showed");
 		}
 		#endregion
+
+		private void editSelectedClick(object sender, RoutedEventArgs e)
+		{
+			foreach (var item in MainDataBaseList)
+			{
+				if (item.isSelected)
+				{
+					Logger.LogInstance.LogInfo(item.Id.ToString());
+					break;
+					//TODO: edit window
+				}
+			}
+		}
+		private void editDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var tmpEditItem = editDataGrid.SelectedCells;
+
+		}
+
 	}
 }
