@@ -14,8 +14,8 @@ namespace projektZaliczeniowy
 		private string name;
 		private string familyName;
 		private DateTime birthDate;
-		private int phone;
-		private int pesel; //TODO: zmienić na stringi ze względu na długość
+		private string phone;
+		private string pesel; 
 		private bool selected;
 		private bool deleted { get; set; }
 
@@ -63,7 +63,7 @@ namespace projektZaliczeniowy
 				notifyMe("Birth date");
 			}
 		}
-		public int phoneNumber
+		public string phoneNumber
 		{
 			get
 			{
@@ -75,7 +75,7 @@ namespace projektZaliczeniowy
 				notifyMe("phone");
 			}
 		}
-		public int peselNumber
+		public string peselNumber
 		{
 			get
 			{

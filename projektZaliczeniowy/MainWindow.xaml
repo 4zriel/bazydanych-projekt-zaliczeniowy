@@ -126,7 +126,7 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionChanged="editDataGridSelectionChanged" >
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionChanged="editDataGridSelectionChanged" SelectedItem="{Binding isSelected, UpdateSourceTrigger=PropertyChanged}">
 							<DataGrid.Columns ><!--
 								<DataGridTemplateColumn x:Name="editSelected" Header="Select" >
 									<DataGridTemplateColumn.CellTemplate>
