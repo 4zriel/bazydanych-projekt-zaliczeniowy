@@ -25,20 +25,32 @@ namespace projektZaliczeniowy
 				throw;
 			}
 		}
-
+		/// <summary>
+		/// bierzemy XDocument z pliku, wrzucamy przez ref do listy
+		/// </summary>
+		/// <param name="dataBaseFileX">plik wczytany w main</param>
+		/// <param name="dataBase">main list DB structure</param>
 		private void dateBaseLoader(XDocument dataBaseFileX, ref List<DBstructure>dataBase)
 		{
-			//TODO: load z pliku do struktury
-			dataBase = (from xml in dataBaseFileX.Elements("person")
-						select new DBstructure
-						{
-							firstName = xml.Element("name").Value,
-							lastName = xml.Element("familyName").Value,
-							birth = Convert.ToDateTime(xml.Element("birthDate").Value),
-							peselNumber = Convert.ToInt32(xml.Element("pesel").Value),
-							phoneNumber = Convert.ToInt32(xml.Element("phone").Value)
-						}).ToList();
-
+			//TODO: walidacja danych tutaj?
+			try
+			{
+				var tmpXML = dataBaseFileX.Element("persons");
+				dataBase = (from xml in tmpXML.Elements("person")
+							select new DBstructure
+							{
+								firstName = xml.Element("name").Value,
+								lastName = xml.Element("familyName").Value,
+								birth = Convert.ToDateTime(xml.Element("birthDate").Value),
+								peselNumber = xml.Element("pesel").Value,
+								phoneNumber = xml.Element("phone").Value
+							}).ToList();
+			}
+			catch (Exception)
+			{
+				
+				throw;
+			}
 		}
 		public DataBaseXML()
 		{

@@ -39,9 +39,9 @@ namespace projektZaliczeniowy
 				{
 					firstName = addNameText.Text,
 					lastName = addFamilyText.Text,
-					phoneNumber = Convert.ToInt32(addPhoneText.Text),
+					phoneNumber = addPhoneText.Text,
 					birth = addBirthText.DisplayDate.Date,
-					peselNumber = Convert.ToInt32(addPeselText.Text)
+					peselNumber = addPeselText.Text
 				};
 				Logger.LogInstance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", addedRecord.lastName, addedRecord.firstName, addedRecord.phoneNumber, addedRecord.birth, addedRecord.peselNumber));
 				return this.addedRecord;

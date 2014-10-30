@@ -43,9 +43,19 @@ namespace projektZaliczeniowy
 		/// </summary>
 		private void dataBaseCreator()
 		{
-			this.MainDBXml = new DataBaseXML();
-			Logger.LogInstance.LogInfo("DataBase created");
-			this.fileOpened = true;			
+			try
+			{
+				this.MainDBXml = new DataBaseXML();
+				Logger.LogInstance.LogInfo("DataBase created");
+				this.fileOpened = true;
+				this.MainDataBaseList = null;
+				this.MainDataBaseList = new List<DBstructure>();
+			}
+			catch (Exception)
+			{					
+				throw;
+			} 
+
 		}
 		private bool saveFileMenuDialog()
 		{
@@ -141,6 +151,71 @@ namespace projektZaliczeniowy
 				}
 			}
 		}
+		private bool checkIfYouCanOpen()
+		{
+			if (this.fileOpened)
+			{
+				if (this.fileSaved && !this.fileEdited)
+				{
+					return true;
+				}
+				else
+				{
+					MessageBoxResult result = MessageBox.Show("Do You really want to open new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+					if (result == MessageBoxResult.Yes)
+					{
+						Logger.LogInstance.LogWarning("User open other DB without saving DB file...");
+						return true;
+					}
+					else
+					{
+						if (saveFileMenuDialog())
+						{
+							this.fileSaved = true;
+							this.fileEdited = false;
+							Logger.LogInstance.LogInfo("User tried to open new one...");
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+			else
+				return true;
+		}
+		private bool checkIfYouCanCreateNewOne() //TODO do porpawki
+		{
+			if (this.fileOpened)
+			{
+				if (!this.fileSaved && !this.fileEdited)
+				{
+					return true;
+				}
+				else
+				{
+					MessageBoxResult result = MessageBox.Show("Do You really want to create new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+					if (result == MessageBoxResult.Yes)
+					{
+						Logger.LogInstance.LogWarning("User create other DB without saving DB file...");
+						return true;
+					}
+					else
+					{
+						if (saveFileMenuDialog())
+						{
+							this.fileSaved = true;
+							this.fileEdited = false;
+							Logger.LogInstance.LogInfo("User tried to create new one...");
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+			else
+				return true;
+		}
+
 #endregion
 
 		#region Events
@@ -173,23 +248,34 @@ namespace projektZaliczeniowy
 		#region ClickEvents
 		private void subMenuOpenClick(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog openDialog = new OpenFileDialog();
-			openDialog.DefaultExt = "*.dbfile";
-			openDialog.FileName = "";
-			openDialog.Filter = "DateBase files|*.dbfile";
-			bool? openDialogShow = openDialog.ShowDialog();
-			if(openDialogShow.HasValue && openDialogShow.Value)
+			if (checkIfYouCanOpen())
 			{
-				this.dataBasePath = openDialog.FileName;
-				Logger.LogInstance.LogInfo("User opened file...");
-				this.MainDBXml = new DataBaseXML(this.dataBasePath, ref this.MainDataBaseList);
-				//TODO: dodanie do struktury
+				try
+				{
+					OpenFileDialog openDialog = new OpenFileDialog();
+					openDialog.DefaultExt = "*.dbfile";
+					openDialog.FileName = "";
+					openDialog.Filter = "DateBase files|*.dbfile";
+					bool? openDialogShow = openDialog.ShowDialog();
+					if (openDialogShow.HasValue && openDialogShow.Value)
+					{
+						this.dataBasePath = openDialog.FileName;
+						Logger.LogInstance.LogInfo(string.Format("User opened file {0}", this.dataBasePath));
+						this.MainDBXml = new DataBaseXML(this.dataBasePath, ref this.MainDataBaseList);
+					}
+					this.fileOpened = true;
+					this.fileSaved = true;
+					enableTabsAndButton();
+					homeTab.IsSelected = true;
+					homeDataGrid.ItemsSource = MainDataBaseList;
+					editDataGrid.ItemsSource = MainDataBaseList;
+				}
+				catch (Exception)
+				{
+
+					throw;
+				}
 			}
-			this.fileOpened = true;
-			enableTabsAndButton();
-			homeTab.IsSelected = true;
-			homeDataGrid.ItemsSource = MainDataBaseList;
-			editDataGrid.ItemsSource = MainDataBaseList;
 		}
 		private void editTabAddClick(object sender, RoutedEventArgs e)
 		{
@@ -209,7 +295,7 @@ namespace projektZaliczeniowy
 		}
 		private void subMenuSaveAsClick(object sender, RoutedEventArgs e)
 		{
-			if (saveFileMenuDialog())
+			if (saveDialogCreator())
 			{
 				this.fileSaved = true;
 				this.fileEdited = false;
@@ -219,7 +305,7 @@ namespace projektZaliczeniowy
 		}
 		private void subMenuCreateClick(object sender, RoutedEventArgs e)
 		{
-			if (!this.fileOpened)
+			if (checkIfYouCanCreateNewOne())
 			{
 				try
 				{
@@ -228,25 +314,28 @@ namespace projektZaliczeniowy
 					editTab.IsSelected = true;
 					homeDataGrid.ItemsSource = MainDataBaseList;
 					editDataGrid.ItemsSource = MainDataBaseList;
+					homeDataGrid.Items.Refresh();
+					editDataGrid.Items.Refresh();
+					this.fileOpened = true;
 				}
 				catch (Exception ex)
 				{
 					messageError(ex, "Error during creation process!");
 				}
 			}
-			else
-			{
-				MessageBoxResult result = MessageBox.Show("Do You really want to create new DB without saving this one?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-				if (result == MessageBoxResult.Yes)
-				{
-					dataBaseCreator();
-					Logger.LogInstance.LogWarning("User destroyed his DB and created new one...");
-				}
-				else
-				{
-					Logger.LogInstance.LogInfo("User tried to create new one...");
-				}
-			}
+			//else
+			//{
+			//	MessageBoxResult result = MessageBox.Show("Do You really want to create new DB without saving this one?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+			//	if (result == MessageBoxResult.Yes)
+			//	{
+			//		dataBaseCreator();
+			//		Logger.LogInstance.LogWarning("User destroyed his DB and created new one...");
+			//	}
+			//	else
+			//	{
+			//		Logger.LogInstance.LogInfo("User tried to create new one...");
+			//	}
+			//}
 
 		}
 		private void subMenuSaveClick(object sender, RoutedEventArgs e)
