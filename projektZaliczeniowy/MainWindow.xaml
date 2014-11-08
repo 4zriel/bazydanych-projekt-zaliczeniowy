@@ -90,7 +90,6 @@
 						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False">
 							<!--AlternatingRowBackground="DarkOliveGreen"-->
 							<DataGrid.Columns >
-								<DataGridCheckBoxColumn Width="30"/>
 								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
 								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
