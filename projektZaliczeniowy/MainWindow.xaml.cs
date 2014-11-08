@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace projektZaliczeniowy
 	{
 		//Zmienne i stałe
 		public DataBaseXML MainDBXml;
-		public List<DBstructure> MainDataBaseList = new List<DBstructure>();
+		public ObservableCollection<DBstructure> MainDataBaseList = new ObservableCollection<DBstructure>();
 		private bool fileOpened = false;
 		private bool fileEdited = false;
 		private bool fileSaved = false;
@@ -48,8 +49,9 @@ namespace projektZaliczeniowy
 				this.MainDBXml = new DataBaseXML();
 				Logger.LogInstance.LogInfo("DataBase created");
 				this.fileOpened = true;
-				this.MainDataBaseList = null;
-				this.MainDataBaseList = new List<DBstructure>();
+				//this.MainDataBaseList = null;
+				//this.MainDataBaseList = new List<DBstructure>();
+				MainDataBaseList.Clear();
 			}
 			catch (Exception)
 			{					
@@ -144,7 +146,7 @@ namespace projektZaliczeniowy
 					{
 						this.fileSaved = true;
 						this.fileEdited = false;
-						Logger.LogInstance.LogInfo("User tried to create new one...");
+						Logger.LogInstance.LogInfo("User tried to close without save...");
 						return true;
 					}
 					return false;
@@ -183,7 +185,7 @@ namespace projektZaliczeniowy
 			else
 				return true;
 		}
-		private bool checkIfYouCanCreateNewOne() //TODO do porpawki
+		private bool checkIfYouCanCreateNewOne() //TODO do poprawki
 		{
 			if (this.fileOpened)
 			{
@@ -261,14 +263,18 @@ namespace projektZaliczeniowy
 					{
 						this.dataBasePath = openDialog.FileName;
 						Logger.LogInstance.LogInfo(string.Format("User opened file {0}", this.dataBasePath));
-						this.MainDBXml = new DataBaseXML(this.dataBasePath, ref this.MainDataBaseList);
+						var tmp = new List<DBstructure>();
+						this.MainDBXml = new DataBaseXML(this.dataBasePath, ref tmp);
+						MainDataBaseList = new ObservableCollection<DBstructure>(tmp);
+						//this.MainDBXml = new DataBaseXML(this.dataBasePath);
+						//MainDataBaseList = new ObservableCollection<DBstructure>(MainDBXml.Read());
 					}
 					this.fileOpened = true;
 					this.fileSaved = true;
 					enableTabsAndButton();
 					homeTab.IsSelected = true;
-					homeDataGrid.ItemsSource = MainDataBaseList;
-					editDataGrid.ItemsSource = MainDataBaseList;
+					//homeDataGrid.ItemsSource = MainDataBaseList;
+					//editDataGrid.ItemsSource = MainDataBaseList;
 				}
 				catch (Exception)
 				{
@@ -290,8 +296,8 @@ namespace projektZaliczeniowy
 				MainDBXml.addToDataBaseXML(tmpRecord);
 				this.fileEdited = true;
 			}
-			editDataGrid.Items.Refresh();
-			homeDataGrid.Items.Refresh(); //refresh na datagridzie
+			//editDataGrid.Items.Refresh();
+			//homeDataGrid.Items.Refresh(); //refresh na datagridzie
 		}
 		private void subMenuSaveAsClick(object sender, RoutedEventArgs e)
 		{
@@ -323,20 +329,6 @@ namespace projektZaliczeniowy
 					messageError(ex, "Error during creation process!");
 				}
 			}
-			//else
-			//{
-			//	MessageBoxResult result = MessageBox.Show("Do You really want to create new DB without saving this one?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-			//	if (result == MessageBoxResult.Yes)
-			//	{
-			//		dataBaseCreator();
-			//		Logger.LogInstance.LogWarning("User destroyed his DB and created new one...");
-			//	}
-			//	else
-			//	{
-			//		Logger.LogInstance.LogInfo("User tried to create new one...");
-			//	}
-			//}
-
 		}
 		private void subMenuSaveClick(object sender, RoutedEventArgs e)
 		{
