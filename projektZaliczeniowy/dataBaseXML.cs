@@ -12,7 +12,7 @@ namespace projektZaliczeniowy
 	{
 		public XDocument dataBaseFileX; 
 		public string dataBasePath = string.Empty;
-		public DataBaseXML(string path, ref List<DBstructure>dateBase)
+		public DataBaseXML(string path, ref List<DBStructureViewModel>dateBase)
 		{
 			try
 			{
@@ -30,20 +30,20 @@ namespace projektZaliczeniowy
 		/// </summary>
 		/// <param name="dataBaseFileX">plik wczytany w main</param>
 		/// <param name="dataBase">main list DB structure</param>
-		private void dateBaseLoader(XDocument dataBaseFileX, ref List<DBstructure>dataBase)
+		private void dateBaseLoader(XDocument dataBaseFileX, ref List<DBStructureViewModel>dataBase)
 		{
 			//TODO: walidacja danych tutaj?
 			try
 			{
 				var tmpXML = dataBaseFileX.Element("persons");
 				dataBase = (from xml in tmpXML.Elements("person")
-							select new DBstructure
+							select new DBStructureViewModel
 							{
-								firstName = xml.Element("name").Value,
-								lastName = xml.Element("familyName").Value,
-								birth = Convert.ToDateTime(xml.Element("birthDate").Value),
-								peselNumber = xml.Element("pesel").Value,
-								phoneNumber = xml.Element("phone").Value
+								Name = xml.Element("name").Value,
+								FamilyName = xml.Element("familyName").Value,
+								BirthDate = Convert.ToDateTime(xml.Element("birthDate").Value),
+								Pesel = xml.Element("pesel").Value,
+								Phone = xml.Element("phone").Value
 							}).ToList();
 			}
 			catch (Exception)
@@ -65,7 +65,7 @@ namespace projektZaliczeniowy
 				throw;
 			}
 		}
-		public void addToDataBaseXML(DBstructure record)
+		public void addToDataBaseXML(DBStructureViewModel record)
 		{
 			try
 			{
@@ -73,11 +73,11 @@ namespace projektZaliczeniowy
 					new XElement("person",
 						//new XElement("ID", record.ID), 
 						//TODO:  id? static zapisywany czy nadawany dynamicznie? Raczej dynamicznie? Check-it
-						new XElement("pesel",record.peselNumber),
-						new XElement("name",record.firstName),
-						new XElement("familyName",record.lastName),
-						new XElement("birthDate",record.birth),
-						new XElement("phone",record.phoneNumber)
+						new XElement("pesel",record.Pesel),
+						new XElement("name",record.Name),
+						new XElement("familyName",record.FamilyName),
+						new XElement("birthDate",record.BirthDate),
+						new XElement("phone",record.Phone)
 						)
 					);
 			}
