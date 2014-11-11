@@ -1,9 +1,14 @@
 ﻿<Window x:Class="projektZaliczeniowy.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:local="clr-namespace:projektZaliczeniowy"
 		Title="Projek Zaliczeniowy" Height="600" Width="800" Icon="Resources/main.ico" 
 		ResizeMode="NoResize" Closing="appIsClosing"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen"
+		Language="pl-PL">
+	<Window.DataContext>
+		<local:MainDBViewModel/>
+	</Window.DataContext>
 
 	<!-- Shared resources -->
 	<Window.Resources>
@@ -87,15 +92,15 @@
 						<RowDefinition Height="1*"/>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False">
+						<DataGrid x:Name="homeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" IsReadOnly="True" CanUserResizeRows="False" AutoGenerateColumns="False" ItemsSource="{Binding DBList, Mode=TwoWay}" FontSize="18" AlternatingRowBackground="#FF8FC377">
 							<!--AlternatingRowBackground="DarkOliveGreen"-->
 							<DataGrid.Columns >
 								<DataGridTextColumn x:Name="homeID" Header="ID" IsReadOnly="False" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
-								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeFName" Header="Family name" Width="150" Binding="{Binding FamilyName, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeName" Header="Name" Width="150" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homeDate" Header="Birth date" Width="100" Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homePhone" Header="Phone number" Width="100" Binding="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"/>
+								<DataGridTextColumn x:Name="homePesel" Header="PESEL" Width="100" Binding="{Binding Pesel, UpdateSourceTrigger=PropertyChanged}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
@@ -125,21 +130,14 @@
 						<RowDefinition Height="1*"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid Grid.Row="0">
-						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionChanged="editDataGridSelectionChanged" SelectedItem="{Binding isSelected, UpdateSourceTrigger=PropertyChanged}">
-							<DataGrid.Columns ><!--
-								<DataGridTemplateColumn x:Name="editSelected" Header="Select" >
-									<DataGridTemplateColumn.CellTemplate>
-										<DataTemplate>
-											<CheckBox IsChecked="{Binding isSelected, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-										</DataTemplate>
-									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>-->								
+						<DataGrid x:Name="editDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="536" Margin="10,0" IsEnabled="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectedItem="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding DBList, Mode=TwoWay}" FontSize="18" AlternatingRowBackground="#FF8FC377">
+							<DataGrid.Columns >							
 								<DataGridTextColumn x:Name="editID" Header="ID" Width="50" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding lastName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding firstName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding birth, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding phoneNumber, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding peselNumber, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editFName" Header="Family name" Width="150" Binding="{Binding FamilyName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editName" Header="Name" Width="150" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editDate" Header="Birth date" Width="100" Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editPhone" Header="Phone number" Width="100" Binding="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+								<DataGridTextColumn x:Name="editPesel" Header="PESEL" Width="100" Binding="{Binding Pesel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>

@@ -1,115 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace projektZaliczeniowy
 {
-	public class DBstructure : INotifyPropertyChanged 
+	public class DBStructure
 	{
 
-		private static int globalIdCounter = 0;
-		private string name;
-		private string familyName;
-		private DateTime birthDate;
-		private string phone;
-		private string pesel; 
-		private bool selected;
-		private bool deleted { get; set; }
+		private string _name;
+		private string _familyName;
+		private DateTime _birthDate;
+		private string _phone;
+		private string _pesel;
+		private bool _selected;
+		private int _id;
 
-
-		#region GetSet
-		public DBstructure()
-		{
-			globalIdCounter++;
-			Id = globalIdCounter;
-		}
-		public int Id { get; set; }
-		public string firstName
-		{
+		#region properties
+		public int Id 
+		{ 
 			get
 			{
-				return name;
+				return _id;
 			}
 			set
 			{
-				name = value;
-				notifyMe("name");
+				_id = value;
 			}
 		}
-		public string lastName
+		private bool _deleted { get; set; }
+		
+		public string Name
 		{
 			get
 			{
-				return familyName;
+				return _name;
 			}
 			set
 			{
-				familyName = value;
-				notifyMe("name");
+				_name = value;
 			}
 		}
-		public DateTime birth
+		public string FamilyName
 		{
 			get
 			{
-				return this.birthDate;
+				return _familyName;
 			}
 			set
 			{
-				this.birthDate = value;
-				notifyMe("Birth date");
+				_familyName = value;
 			}
 		}
-		public string phoneNumber
+		public DateTime BirthDate
 		{
 			get
 			{
-				return this.phone;
+				return _birthDate;
 			}
 			set
 			{
-				this.phone = value;
-				notifyMe("phone");
+				_birthDate = value;
 			}
 		}
-		public string peselNumber
+		public string Phone
 		{
 			get
 			{
-				return this.pesel;
+				return _phone;
 			}
 			set
 			{
-				this.pesel = value;
-				notifyMe("PESEL");
+				_phone = value;
 			}
-		} 
-		public bool isSelected
+		}
+		public string Pesel
 		{
 			get
 			{
-				return this.selected;
+				return _pesel;
 			}
 			set
 			{
-				this.selected = value;
-				notifyMe("selected");
+				_pesel = value;
+			}
+		}
+		public bool Selected
+		{
+			get
+			{
+				return _selected;
+			}
+			set
+			{
+				_selected = value;
 			}
 		}
 		#endregion
-
-		//autogenerate 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void notifyMe(string p)
-		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(p));
-			}
-		}
 	}
 }

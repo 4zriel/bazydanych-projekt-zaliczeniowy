@@ -24,18 +24,19 @@ namespace projektZaliczeniowy
 	{
 		//Zmienne i stałe
 		public DataBaseXML MainDBXml;
-		public ObservableCollection<DBstructure> MainDataBaseList = new ObservableCollection<DBstructure>();
+		//public ObservableCollection<DBStructureViewModel> MainDataBaseList = new ObservableCollection<DBStructureViewModel>();
 		private bool fileOpened = false;
-		private bool fileEdited = false;
 		private bool fileSaved = false;
 		private string dataBasePath = string.Empty;
-		public double Version = 0.6;
+		public double Version = 0.7;
+		MainDBViewModel MainDataBaseList = new MainDBViewModel();
 		public MainWindow()
 		{			
 			InitializeComponent();
 			Logger.LogInstance.LogInfo("Initialization completed");
 			Logger.LogInstance.LogInfo("To start using application, select [Create new] or [Open] from [File] menu");
 			logTab.IsSelected = true; //TODO: może lepiej okno z wyborem create/open?
+			MainDataBaseList = (MainDBViewModel)base.DataContext;
 		}
 
 		#region Methods
@@ -49,8 +50,6 @@ namespace projektZaliczeniowy
 				this.MainDBXml = new DataBaseXML();
 				Logger.LogInstance.LogInfo("DataBase created");
 				this.fileOpened = true;
-				//this.MainDataBaseList = null;
-				//this.MainDataBaseList = new List<DBstructure>();
 				MainDataBaseList.Clear();
 			}
 			catch (Exception)
@@ -128,7 +127,7 @@ namespace projektZaliczeniowy
 		}
 		private bool checkIfYouCanQuit()
 		{
-			if (this.fileSaved && !this.fileEdited)
+			if (this.fileSaved && this.fileOpened)
 			{
 				return true;
 			}
@@ -145,7 +144,6 @@ namespace projektZaliczeniowy
 					if (saveFileMenuDialog())
 					{
 						this.fileSaved = true;
-						this.fileEdited = false;
 						Logger.LogInstance.LogInfo("User tried to close without save...");
 						return true;
 					}
@@ -157,7 +155,7 @@ namespace projektZaliczeniowy
 		{
 			if (this.fileOpened)
 			{
-				if (this.fileSaved && !this.fileEdited)
+				if (this.fileSaved)
 				{
 					return true;
 				}
@@ -174,7 +172,6 @@ namespace projektZaliczeniowy
 						if (saveFileMenuDialog())
 						{
 							this.fileSaved = true;
-							this.fileEdited = false;
 							Logger.LogInstance.LogInfo("User tried to open new one...");
 							return true;
 						}
@@ -185,11 +182,11 @@ namespace projektZaliczeniowy
 			else
 				return true;
 		}
-		private bool checkIfYouCanCreateNewOne() //TODO do poprawki
+		private bool checkIfYouCanCreateNewOne()  
 		{
 			if (this.fileOpened)
 			{
-				if (!this.fileSaved && !this.fileEdited)
+				if (!this.fileSaved)
 				{
 					return true;
 				}
@@ -206,7 +203,6 @@ namespace projektZaliczeniowy
 						if (saveFileMenuDialog())
 						{
 							this.fileSaved = true;
-							this.fileEdited = false;
 							Logger.LogInstance.LogInfo("User tried to create new one...");
 							return true;
 						}
@@ -233,9 +229,9 @@ namespace projektZaliczeniowy
 					}
 				}
 			}
-			else if (e.OriginalSource is DataGridCell)
+			else if (e.OriginalSource is DataGrid)
 			{
-				throw new Exception("TEST");
+				//throw new Exception("TEST");
 			}
 		}
 		private void appIsClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -263,9 +259,15 @@ namespace projektZaliczeniowy
 					{
 						this.dataBasePath = openDialog.FileName;
 						Logger.LogInstance.LogInfo(string.Format("User opened file {0}", this.dataBasePath));
-						var tmp = new List<DBstructure>();
+						var tmp = new List<DBStructureViewModel>();
 						this.MainDBXml = new DataBaseXML(this.dataBasePath, ref tmp);
-						MainDataBaseList = new ObservableCollection<DBstructure>(tmp);
+						foreach (var item in tmp)
+						{
+							MainDataBaseList.addToList(item);
+						}						
+						//MainDataBaseList = new ObservableCollection<DBStructureViewModel>(tmp); TMP
+						//homeDataGrid.ItemsSource = MainDataBaseList.DBList; //TODO: przerobić to na VM
+						//editDataGrid.ItemsSource = MainDataBaseList.DBList;
 						//this.MainDBXml = new DataBaseXML(this.dataBasePath);
 						//MainDataBaseList = new ObservableCollection<DBstructure>(MainDBXml.Read());
 					}
@@ -291,10 +293,11 @@ namespace projektZaliczeniowy
 			addWindow.ShowDialog();			
 			if (addWindow.added)
 			{
-				DBstructure tmpRecord = addWindow.addedRecord;
-				MainDataBaseList.Add(tmpRecord);
+				DBStructureViewModel tmpRecord = addWindow.addedRecord;
+				MainDataBaseList.addToList(tmpRecord);
+				//MainDataBaseList.Add(tmpRecord);
 				MainDBXml.addToDataBaseXML(tmpRecord);
-				this.fileEdited = true;
+				this.fileSaved = false;
 			}
 			//editDataGrid.Items.Refresh();
 			//homeDataGrid.Items.Refresh(); //refresh na datagridzie
@@ -304,7 +307,6 @@ namespace projektZaliczeniowy
 			if (saveDialogCreator())
 			{
 				this.fileSaved = true;
-				this.fileEdited = false;
 				Logger.LogInstance.LogInfo("DataBase file saved");
 				Logger.LogInstance.LogWarning("User use save as option");
 			}			
@@ -318,8 +320,8 @@ namespace projektZaliczeniowy
 					dataBaseCreator();
 					enableTabsAndButton();
 					editTab.IsSelected = true;
-					homeDataGrid.ItemsSource = MainDataBaseList;
-					editDataGrid.ItemsSource = MainDataBaseList;
+					//homeDataGrid.ItemsSource = MainDataBaseList.DBList;
+					//editDataGrid.ItemsSource = MainDataBaseList;
 					homeDataGrid.Items.Refresh();
 					editDataGrid.Items.Refresh();
 					this.fileOpened = true;
@@ -337,7 +339,6 @@ namespace projektZaliczeniowy
 				if (saveFileMenuDialog())
 				{
 					this.fileSaved = true;
-					this.fileEdited = false;
 					Logger.LogInstance.LogInfo("DataBase file saved");
 				}
 			}
@@ -348,8 +349,7 @@ namespace projektZaliczeniowy
 		}		
 		private void subMenuQuitClick(object sender, RoutedEventArgs e)
 		{
-			if (checkIfYouCanQuit())
-				this.Close();	
+			this.Close();	
 		}
 		private void subMenuAboutClick(object sender, RoutedEventArgs e)
 		{
@@ -360,9 +360,9 @@ namespace projektZaliczeniowy
 
 		private void editSelectedClick(object sender, RoutedEventArgs e)
 		{
-			foreach (var item in MainDataBaseList)
+			foreach (var item in MainDataBaseList.DBList)
 			{
-				if (item.isSelected)
+				if (item.Selected)
 				{
 					Logger.LogInstance.LogInfo(item.Id.ToString());
 					break;
@@ -370,11 +370,5 @@ namespace projektZaliczeniowy
 				}
 			}
 		}
-		private void editDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			var tmpEditItem = editDataGrid.SelectedCells;
-
-		}
-
 	}
 }

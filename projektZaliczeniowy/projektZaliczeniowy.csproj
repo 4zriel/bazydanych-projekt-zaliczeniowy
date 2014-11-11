@@ -87,8 +87,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataBaseXML.cs" />
-    <Compile Include="DBstructure.cs" />
+    <Compile Include="DBStructure.cs" />
+    <Compile Include="DBStructureViewModel.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MainDBViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

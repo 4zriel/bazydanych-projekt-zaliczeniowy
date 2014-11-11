@@ -21,7 +21,7 @@ namespace projektZaliczeniowy
 	public partial class addRecord : Window
 	{
 		public bool added = false;
-		public DBstructure addedRecord; //added record by user
+		public DBStructureViewModel addedRecord; //added record by user
 
 		#region Methods
 		public addRecord()
@@ -30,26 +30,26 @@ namespace projektZaliczeniowy
 			addNameText.Focus();
 			Logger.LogInstance.LogInfo("addRecord window initialization completed");
 		}
-		public DBstructure userRecord()
+		public DBStructureViewModel userRecord()
 		{
 			try
 			{
 				//TODO: Walidacja etc
-				this.addedRecord = new DBstructure()
+				this.addedRecord = new DBStructureViewModel()
 				{
-					firstName = addNameText.Text,
-					lastName = addFamilyText.Text,
-					phoneNumber = addPhoneText.Text,
-					birth = addBirthText.DisplayDate.Date,
-					peselNumber = addPeselText.Text
+					Name = addNameText.Text,
+					FamilyName = addFamilyText.Text,
+					Phone = addPhoneText.Text,
+					BirthDate = addBirthText.DisplayDate.Date,
+					Pesel = addPeselText.Text
 				};
-				Logger.LogInstance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", addedRecord.lastName, addedRecord.firstName, addedRecord.phoneNumber, addedRecord.birth, addedRecord.peselNumber));
+				Logger.LogInstance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", addedRecord.FamilyName, addedRecord.Name, addedRecord.Phone, addedRecord.BirthDate, addedRecord.Pesel));
 				return this.addedRecord;
 			}
 			catch (Exception ex)
 			{
 				Logger.LogInstance.LogError(string.Format("Error during creation of new record!\n{0}", ex.ToString()));
-				return new DBstructure();
+				return new DBStructureViewModel();
 			}
 		}
 		private void addNewRecord()
