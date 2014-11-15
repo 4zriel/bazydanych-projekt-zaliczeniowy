@@ -71,7 +71,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="addRecord.xaml">
+    <Compile Include="EditRecordWindow.xaml.cs">
+      <DependentUpon>EditRecordWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModelBase.cs" />
+    <Page Include="AddRecordWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditRecordWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -79,15 +87,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="addRecord.xaml.cs">
-      <DependentUpon>addRecord.xaml</DependentUpon>
+    <Compile Include="AddRecordWindow.xaml.cs">
+      <DependentUpon>AddRecordWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataBaseXML.cs" />
-    <Compile Include="DBStructure.cs" />
     <Compile Include="DBStructureViewModel.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MainDBViewModel.cs" />

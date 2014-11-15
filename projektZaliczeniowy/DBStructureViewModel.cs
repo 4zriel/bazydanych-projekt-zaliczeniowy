@@ -1,134 +1,105 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace projektZaliczeniowy
 {
-	public class DBStructureViewModel : INotifyPropertyChanged 
+	public class DBStructureViewModel : ViewModelBase
 	{
-
-		private static int _globalIdCounter = 0;
+		//private static int GlobalIdCounter = 0;//TODO: przerobić to bo ID się źle generuje
 		#region contructor
 		public DBStructureViewModel()
 		{
-			_dbstructure = new DBStructure();
-			_globalIdCounter++;
-			DBStructure.Id = _globalIdCounter;
-		} 
+			//GlobalIdCounter++;
+			//Id = GlobalIdCounter;
+		}
 		#endregion
-
-		#region membrers
-		DBStructure _dbstructure;
-		#endregion	
-		#region Properties
-		public DBStructure DBStructure
-		{
-			get
-			{
-				return _dbstructure;
-			}
-			set
-			{
-				_dbstructure = value;
-			}
-		}
-		public int Id 
-		{ 
-			get
-			{
-				return DBStructure.Id;
-			}
-			set
-			{
-				DBStructure.Id = value;
-				notifyMe("ID");
-			}
-		}
+		
+		private string _Name = default(string);
 		public string Name
 		{
 			get
 			{
-				return DBStructure.Name;
+				return _Name;
 			}
 			set
 			{
-				DBStructure.Name = value;
-				notifyMe("name");
+				_Name = value;
+				NotifyMe("Name");
 			}
 		}
+
+		private string _FamilyName = default(string);
 		public string FamilyName
 		{
 			get
 			{
-				return DBStructure.FamilyName;
+				return _FamilyName;
 			}
 			set
 			{
-				DBStructure.FamilyName = value;
-				notifyMe("name");
+				_FamilyName = value;
+				NotifyMe("FamilyName");
 			}
 		}
+
+		private DateTime _BirthDate = default(DateTime);
 		public DateTime BirthDate
 		{
 			get
 			{
-				return DBStructure.BirthDate;
+				return _BirthDate;
 			}
 			set
 			{
-				DBStructure.BirthDate = value;
-				notifyMe("Birth date");
+				_BirthDate = value;
+				NotifyMe("BirthDate");
 			}
 		}
+
+		private string _Phone = default(string);
 		public string Phone
 		{
 			get
 			{
-				return DBStructure.Phone;
+				return _Phone;
 			}
 			set
 			{
-				DBStructure.Phone = value;
-				notifyMe("phone");
+				_Phone = value;
+				NotifyMe("Phone");
 			}
 		}
+
+		private string _Pesel = default(string);
 		public string Pesel
 		{
 			get
 			{
-				return DBStructure.Pesel;
+				return _Pesel;
 			}
 			set
 			{
-				DBStructure.Pesel = value;
-				notifyMe("PESEL");
+				_Pesel = value;
+				NotifyMe("Pesel");
 			}
-		} 
-		public bool Selected
+		}
+
+		private int _Id = default(int);
+		public int Id
 		{
 			get
 			{
-				return DBStructure.Selected;
+				return _Id;
 			}
 			set
 			{
-				DBStructure.Selected = value;
-				notifyMe("selected");
+				_Id = value;
+				NotifyMe("Id");
 			}
 		}
-		#endregion
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void notifyMe(string p)
+		public void resetID()
 		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(p));
-			}
+			this._Id = 0;
 		}
 	}
 }
