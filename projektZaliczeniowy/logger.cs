@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace projektZaliczeniowy
 {
@@ -14,14 +11,14 @@ namespace projektZaliczeniowy
 		public List<string> LogList = new List<string>(); //TODO: binding?
 
 		#region Singleton
-		private static Logger Instance;
-		public static Logger LogInstance
+		private static Logger _instance;
+		public static Logger Instance
 		{
 			get
 			{
-				if (Instance == null)
-					Instance = new Logger();
-				return Instance;
+				if (_instance == null)
+					_instance = new Logger();
+				return _instance;
 			}
 		}
 		private Logger()
@@ -40,7 +37,6 @@ namespace projektZaliczeniowy
 				logSaveToFile.WriteLine(message);
 			}
 		}
-
 		private static string GetTime()
 		{
 			return DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss:fff");

@@ -22,53 +22,31 @@ namespace projektZaliczeniowy
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		//Zmienne i stałe
-		public DataBaseXML MainDBXml;
-		//public ObservableCollection<DBStructureViewModel> MainDataBaseList = new ObservableCollection<DBStructureViewModel>();
+		#region properties
 		private bool fileOpened = false;
 		private bool fileSaved = false;
-		private string dataBasePath = string.Empty;
-		public double Version = 0.7;
-		MainDBViewModel MainDataBaseList = new MainDBViewModel();
+		public string Version = "0.8";
+		private MainDBViewModel _MainDBViewModel = new MainDBViewModel(); 
+		#endregion
+
 		public MainWindow()
-		{			
+		{
 			InitializeComponent();
-			Logger.LogInstance.LogInfo("Initialization completed");
-			Logger.LogInstance.LogInfo("To start using application, select [Create new] or [Open] from [File] menu");
+			Logger.Instance.LogInfo("Initialization completed");
+			Logger.Instance.LogInfo("To start using application, select [Create new] or [Open] from [File] menu");
 			logTab.IsSelected = true; //TODO: może lepiej okno z wyborem create/open?
-			MainDataBaseList = (MainDBViewModel)base.DataContext;
+			_MainDBViewModel = (MainDBViewModel)base.DataContext;
 		}
 
 		#region Methods
-		/// <summary>
-		/// metoda do tworzenia nowej bazy
-		/// </summary>
-		private void dataBaseCreator()
-		{
-			try
-			{
-				this.MainDBXml = new DataBaseXML();
-				Logger.LogInstance.LogInfo("DataBase created");
-				this.fileOpened = true;
-				MainDataBaseList.Clear();
-			}
-			catch (Exception)
-			{					
-				throw;
-			} 
-
-		}
 		private bool saveFileMenuDialog()
 		{
-			if (this.dataBasePath.Length == 0)
-			{
+			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath))
 				return saveDialogCreator();
-			}
 			else
-			{
-				this.saveFile(this.dataBasePath); //if alredy path added (once saved)
-				return true;
-			}
+				_MainDBViewModel.Save();
+
+			return true;
 		}
 		private bool saveDialogCreator()
 		{
@@ -77,20 +55,18 @@ namespace projektZaliczeniowy
 			saveDialog.FileName = "";
 			saveDialog.Filter = "DateBase files|*.dbfile";
 			bool? saveDialogShow = saveDialog.ShowDialog();
+
 			if (saveDialogShow.HasValue && saveDialogShow.Value)
 			{
-				this.dataBasePath = saveDialog.FileName;
-				this.saveFile(this.dataBasePath);
-				Logger.LogInstance.LogInfo(string.Format("User saved DB in {0}", this.dataBasePath));
+				_MainDBViewModel.DataBasePath = saveDialog.FileName;
+				_MainDBViewModel.Save();
+				Logger.Instance.LogInfo(string.Format("User saved DB in {0}", saveDialog.FileName));
+
 				return true;
 			}
 			else
 				return false;
 		}
-		private void saveFile(string p)
-		{
-			this.MainDBXml.Save(p);
-		}		
 		/// <summary>
 		/// głowna metoda odpowiadająca za odświeżanie tabów
 		/// </summary>
@@ -101,7 +77,7 @@ namespace projektZaliczeniowy
 			{
 				listBoxForLogs.Items.Clear();
 			}
-			foreach (var item in Logger.LogInstance.LogList)
+			foreach (var item in Logger.Instance.LogList)
 			{
 				listBoxForLogs.Items.Add(item);
 			}
@@ -123,20 +99,20 @@ namespace projektZaliczeniowy
 		private static void messageError(Exception ex, string message)
 		{
 			MessageBoxResult result = MessageBox.Show(string.Format("{1}\n{0}", ex.ToString(), message), string.Format("Error! {0}", message), MessageBoxButton.OK, MessageBoxImage.Stop);
-			Logger.LogInstance.LogError(string.Format("{1}!\n{0}", ex.Message, message));
+			Logger.Instance.LogError(string.Format("{1}!\n{0}", ex.Message, message));
 		}
 		private bool checkIfYouCanQuit()
 		{
-			if (this.fileSaved && this.fileOpened)
+			if (!this.fileOpened)
 			{
 				return true;
 			}
-			else
+			else if (!this.fileSaved)
 			{
 				MessageBoxResult result = MessageBox.Show("Do You really want to close without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 				if (result == MessageBoxResult.Yes)
 				{
-					Logger.LogInstance.LogWarning("User closed app without saveing DB file...");
+					Logger.Instance.LogWarning("User closed app without saveing DB file...");
 					return true;
 				}
 				else
@@ -144,12 +120,14 @@ namespace projektZaliczeniowy
 					if (saveFileMenuDialog())
 					{
 						this.fileSaved = true;
-						Logger.LogInstance.LogInfo("User tried to close without save...");
+						Logger.Instance.LogInfo("User tried to close without save...");
 						return true;
 					}
 					return false;
 				}
 			}
+			else
+				return true;
 		}
 		private bool checkIfYouCanOpen()
 		{
@@ -164,7 +142,7 @@ namespace projektZaliczeniowy
 					MessageBoxResult result = MessageBox.Show("Do You really want to open new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 					if (result == MessageBoxResult.Yes)
 					{
-						Logger.LogInstance.LogWarning("User open other DB without saving DB file...");
+						Logger.Instance.LogWarning("User open other DB without saving DB file...");
 						return true;
 					}
 					else
@@ -172,7 +150,7 @@ namespace projektZaliczeniowy
 						if (saveFileMenuDialog())
 						{
 							this.fileSaved = true;
-							Logger.LogInstance.LogInfo("User tried to open new one...");
+							Logger.Instance.LogInfo("User tried to open new one...");
 							return true;
 						}
 						return false;
@@ -182,7 +160,7 @@ namespace projektZaliczeniowy
 			else
 				return true;
 		}
-		private bool checkIfYouCanCreateNewOne()  
+		private bool checkIfYouCanCreateNewOne()
 		{
 			if (this.fileOpened)
 			{
@@ -195,7 +173,7 @@ namespace projektZaliczeniowy
 					MessageBoxResult result = MessageBox.Show("Do You really want to create new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 					if (result == MessageBoxResult.Yes)
 					{
-						Logger.LogInstance.LogWarning("User create other DB without saving DB file...");
+						Logger.Instance.LogWarning("User create other DB without saving DB file...");
 						return true;
 					}
 					else
@@ -203,7 +181,7 @@ namespace projektZaliczeniowy
 						if (saveFileMenuDialog())
 						{
 							this.fileSaved = true;
-							Logger.LogInstance.LogInfo("User tried to create new one...");
+							Logger.Instance.LogInfo("User tried to create new one...");
 							return true;
 						}
 						return false;
@@ -212,9 +190,55 @@ namespace projektZaliczeniowy
 			}
 			else
 				return true;
+		}		
+		private void createNewDB()
+		{
+			_MainDBViewModel.CreateNewDB();
+			enableTabsAndButton();
+			editTab.IsSelected = true;
+			this.fileOpened = true;
 		}
+		private void openFile()
+		{
+			OpenFileDialog openDialog = new OpenFileDialog();
+			openDialog.DefaultExt = "*.dbfile";
+			openDialog.FileName = "";
+			openDialog.Filter = "DateBase files|*.dbfile";
+			bool? openDialogShow = openDialog.ShowDialog();
+			_MainDBViewModel.DBList.Clear();
+			if (openDialogShow.HasValue && openDialogShow.Value)
+			{
+				_MainDBViewModel.DataBasePath = openDialog.FileName;
+				Logger.Instance.LogInfo(string.Format("User opened file {0}", openDialog.FileName));
+				_MainDBViewModel.Load();
+				this.fileOpened = true;
+				this.fileSaved = true;
+				enableTabsAndButton();
+				homeTab.IsSelected = true;
+			}
+		}
+		private void editSelected()
+		{
+			//TODO: napisac działające z bindingiem commad
+			//TODO: zablokowac jesli lista pusta!
+			if (_MainDBViewModel.DBSelectedItem != null)
+			{
+				var tmpForSelectedItem = _MainDBViewModel.DBSelectedItem;
+				Logger.Instance.LogInfo("User tried to edit record");
+				Logger.Instance.LogInfo(string.Format("Selected record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", _MainDBViewModel.DBSelectedItem.FamilyName, _MainDBViewModel.DBSelectedItem.Name, _MainDBViewModel.DBSelectedItem.Phone, _MainDBViewModel.DBSelectedItem.BirthDate, _MainDBViewModel.DBSelectedItem.Pesel));
+				var editWindow = new EditRecordWindow(_MainDBViewModel.DBSelectedItem);
+				editWindow.Owner = this;
+				editWindow.ShowDialog();
 
-#endregion
+				if (editWindow.Edited)
+				{
+					_MainDBViewModel.DBList.Remove(_MainDBViewModel.DBSelectedItem);
+					_MainDBViewModel.DBList.Add(editWindow.EditedRecord);
+					this.fileSaved = false;
+				}
+			}
+		}
+		#endregion
 
 		#region Events
 		private void tab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -225,13 +249,9 @@ namespace projektZaliczeniowy
 				{
 					if (refreshLogTab())
 					{
-						Logger.LogInstance.LogInfo("LogTab refreshed");
+						Logger.Instance.LogInfo("LogTab refreshed");
 					}
 				}
-			}
-			else if (e.OriginalSource is DataGrid)
-			{
-				//throw new Exception("TEST");
 			}
 		}
 		private void appIsClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -244,72 +264,46 @@ namespace projektZaliczeniowy
 		#endregion
 
 		#region ClickEvents
+
 		private void subMenuOpenClick(object sender, RoutedEventArgs e)
 		{
 			if (checkIfYouCanOpen())
 			{
 				try
 				{
-					OpenFileDialog openDialog = new OpenFileDialog();
-					openDialog.DefaultExt = "*.dbfile";
-					openDialog.FileName = "";
-					openDialog.Filter = "DateBase files|*.dbfile";
-					bool? openDialogShow = openDialog.ShowDialog();
-					if (openDialogShow.HasValue && openDialogShow.Value)
-					{
-						this.dataBasePath = openDialog.FileName;
-						Logger.LogInstance.LogInfo(string.Format("User opened file {0}", this.dataBasePath));
-						var tmp = new List<DBStructureViewModel>();
-						this.MainDBXml = new DataBaseXML(this.dataBasePath, ref tmp);
-						foreach (var item in tmp)
-						{
-							MainDataBaseList.addToList(item);
-						}						
-						//MainDataBaseList = new ObservableCollection<DBStructureViewModel>(tmp); TMP
-						//homeDataGrid.ItemsSource = MainDataBaseList.DBList; //TODO: przerobić to na VM
-						//editDataGrid.ItemsSource = MainDataBaseList.DBList;
-						//this.MainDBXml = new DataBaseXML(this.dataBasePath);
-						//MainDataBaseList = new ObservableCollection<DBstructure>(MainDBXml.Read());
-					}
-					this.fileOpened = true;
-					this.fileSaved = true;
-					enableTabsAndButton();
-					homeTab.IsSelected = true;
-					//homeDataGrid.ItemsSource = MainDataBaseList;
-					//editDataGrid.ItemsSource = MainDataBaseList;
+					openFile();
 				}
 				catch (Exception)
 				{
-
 					throw;
 				}
 			}
 		}
 		private void editTabAddClick(object sender, RoutedEventArgs e)
 		{
-			Logger.LogInstance.LogInfo("User tried to add record");
-			var addWindow = new addRecord();
-			addWindow.Owner = this;
-			addWindow.ShowDialog();			
-			if (addWindow.added)
+			Logger.Instance.LogInfo("User tried to add record");
+			int tmp =default(int);
+			if (_MainDBViewModel.DBList.Count != 0)
 			{
-				DBStructureViewModel tmpRecord = addWindow.addedRecord;
-				MainDataBaseList.addToList(tmpRecord);
-				//MainDataBaseList.Add(tmpRecord);
-				MainDBXml.addToDataBaseXML(tmpRecord);
+				tmp = _MainDBViewModel.DBList.Last().Id;				
+			}
+			var addWindow = new AddRecordWindow(tmp);
+			addWindow.Owner = this;
+			addWindow.ShowDialog();
+			if (addWindow.Added)
+			{
+				_MainDBViewModel.AddNewRecord(addWindow.AddedRecord);
 				this.fileSaved = false;
 			}
-			//editDataGrid.Items.Refresh();
-			//homeDataGrid.Items.Refresh(); //refresh na datagridzie
 		}
 		private void subMenuSaveAsClick(object sender, RoutedEventArgs e)
 		{
 			if (saveDialogCreator())
 			{
 				this.fileSaved = true;
-				Logger.LogInstance.LogInfo("DataBase file saved");
-				Logger.LogInstance.LogWarning("User use save as option");
-			}			
+				Logger.Instance.LogInfo("DataBase file saved");
+				Logger.Instance.LogWarning("User use save as option");
+			}
 		}
 		private void subMenuCreateClick(object sender, RoutedEventArgs e)
 		{
@@ -317,14 +311,7 @@ namespace projektZaliczeniowy
 			{
 				try
 				{
-					dataBaseCreator();
-					enableTabsAndButton();
-					editTab.IsSelected = true;
-					//homeDataGrid.ItemsSource = MainDataBaseList.DBList;
-					//editDataGrid.ItemsSource = MainDataBaseList;
-					homeDataGrid.Items.Refresh();
-					editDataGrid.Items.Refresh();
-					this.fileOpened = true;
+					createNewDB();
 				}
 				catch (Exception ex)
 				{
@@ -339,36 +326,81 @@ namespace projektZaliczeniowy
 				if (saveFileMenuDialog())
 				{
 					this.fileSaved = true;
-					Logger.LogInstance.LogInfo("DataBase file saved");
+					Logger.Instance.LogInfo("DataBase file saved");
 				}
 			}
 			catch (Exception ex)
 			{
 				messageError(ex, "Błąd zapisu pliku!");
 			}
-		}		
+		}
 		private void subMenuQuitClick(object sender, RoutedEventArgs e)
 		{
-			this.Close();	
+			this.Close();
 		}
 		private void subMenuAboutClick(object sender, RoutedEventArgs e)
 		{
-			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.Version),"About", MessageBoxButton.OK, MessageBoxImage.Information);
-			Logger.LogInstance.LogInfo("About showed");
+			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.Version), "About", MessageBoxButton.OK, MessageBoxImage.Information);
+			Logger.Instance.LogInfo("About showed");
 		}
-		#endregion
-
 		private void editSelectedClick(object sender, RoutedEventArgs e)
 		{
-			foreach (var item in MainDataBaseList.DBList)
+			editSelected();
+		}
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.O))
 			{
-				if (item.Selected)
+				if (checkIfYouCanOpen())
 				{
-					Logger.LogInstance.LogInfo(item.Id.ToString());
-					break;
-					//TODO: edit window
+					try
+					{
+						openFile();
+					}
+					catch (Exception)
+					{
+						throw;
+					}
 				}
 			}
+			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.S))
+			{
+				try
+				{
+					if (saveFileMenuDialog())
+					{
+						this.fileSaved = true;
+						Logger.Instance.LogInfo("DataBase file saved");
+					}
+				}
+				catch (Exception ex)
+				{
+					messageError(ex, "Błąd zapisu pliku!");
+				}
+			}
+			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.N))
+			{
+				if (checkIfYouCanCreateNewOne())
+				{
+					try
+					{
+						createNewDB();
+					}
+					catch (Exception ex)
+					{
+						messageError(ex, "Error during creation process!");
+					}
+				}
+			}
+			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.Q))
+			{
+				this.Close();
+			}
 		}
+		private void editDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			editSelected();
+		}
+		#endregion
 	}
 }
