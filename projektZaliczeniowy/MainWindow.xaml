@@ -137,6 +137,9 @@
 				x:Name="MenuSort"
 				Header="Sort database" />
 			<MenuItem
+				x:Name="MenuSearch"
+				Header="Search record" />
+			<MenuItem
 				x:Name="menuHelp"
 				Header="Help"
 				Background="#FF4E4E50"
@@ -248,27 +251,6 @@
 							Width="75"
 							ToolTip="Go back">
 						</Button>
-						<Button
-							Content="Button"
-							HorizontalAlignment="Left"
-							Height="19"
-							Margin="241,510,0,0"
-							VerticalAlignment="Top"
-							Width="73" />
-						<Button
-							Content="Button"
-							HorizontalAlignment="Left"
-							Height="19"
-							Margin="514,510,0,0"
-							VerticalAlignment="Top"
-							Width="72" />
-						<Button
-							Content="Button"
-							HorizontalAlignment="Left"
-							Height="19"
-							Margin="607,510,0,0"
-							VerticalAlignment="Top"
-							Width="83" />
 						<TextBox
 							HorizontalAlignment="Left"
 							Height="19"
@@ -377,6 +359,13 @@
 							Padding="3"
 							Width="100"
 							Click="editSelectedClick" />
+						<Button
+							Content="Delete selected"
+							HorizontalAlignment="Left"
+							Margin="282,494,0,10"
+							Padding="3"
+							Width="100"
+							Click="deleteSelectedClick" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -393,8 +382,91 @@
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
-					Margin="0,-3,0,-2">
-
+					Margin="2.5">
+					<Grid.RowDefinitions>
+						<RowDefinition
+							Height="9*"></RowDefinition>
+						<RowDefinition
+							Height="1*"></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid
+						Grid.Row="0">
+						<DataGrid
+							x:Name="binDataGrid"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Top"
+							Height="536"
+							Margin="10,0"
+							IsEnabled="False"
+							CanUserReorderColumns="False"
+							CanUserResizeColumns="False"
+							CanUserResizeRows="False"
+							AutoGenerateColumns="False"
+							CanUserAddRows="False"
+							CanUserDeleteRows="False"
+							SelectionMode="Single"
+							ItemsSource="{Binding DeletedDBList, Mode=TwoWay}"
+							SelectedItem="{Binding DeleteDBSelectedItem, Mode=TwoWay}"
+							FontSize="18"
+							AlternatingRowBackground="#FF8FC377" 
+							IsReadOnly="False">
+							<DataGrid.Columns>
+								<DataGridTextColumn
+									x:Name="binID"
+									Header="ID"
+									Width="Auto"
+									Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"
+									/>
+								<DataGridTextColumn
+									x:Name="binFName"
+									Header="Family name"
+									Width="150"
+									Binding="{Binding FamilyName, UpdateSourceTrigger=PropertyChanged}"
+									/>
+								<DataGridTextColumn
+									x:Name="binName"
+									Header="Name"
+									Width="150"
+									Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+									/>
+								<DataGridTextColumn
+									x:Name="binDate"
+									Header="Birth date"
+									Width="100"
+									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}"
+									/>
+								<DataGridTextColumn
+									x:Name="binPhone"
+									Header="Phone number"
+									Width="Auto"
+									Binding="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"
+									/>
+								<DataGridTextColumn
+									x:Name="binPesel"
+									Header="PESEL"
+									Width="Auto"
+									Binding="{Binding Pesel, UpdateSourceTrigger=PropertyChanged}"
+									/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Grid>
+					<Grid
+						Grid.RowSpan="2">
+						<Button
+							Content="Restore selected record"
+							HorizontalAlignment="Left"
+							Margin="40,494,0,10"
+							Padding="3"
+							Width="150"
+							Click="binTabRestoreClick" />
+						<Button
+							Content="Permanently delete selected record"
+							HorizontalAlignment="Left"
+							Margin="213,494,0,10"
+							Padding="3"
+							Width="203"
+							Click="binTabDeleteClick" />
+					</Grid>
 				</Grid>
 			</TabItem>
 			<TabItem
