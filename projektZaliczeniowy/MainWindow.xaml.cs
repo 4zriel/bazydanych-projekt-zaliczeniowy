@@ -220,7 +220,6 @@ namespace projektZaliczeniowy
 		private void editSelected()
 		{
 			//TODO: napisac działające z bindingiem commad
-			//TODO: zablokowac jesli lista pusta!
 			if (_MainDBViewModel.DBSelectedItem != null)
 			{
 				var tmpForSelectedItem = _MainDBViewModel.DBSelectedItem;
@@ -236,6 +235,51 @@ namespace projektZaliczeniowy
 					_MainDBViewModel.DBList.Add(editWindow.EditedRecord);
 					this.fileSaved = false;
 				}
+			}
+		}
+		private void checkIfDisableBin()
+		{
+			if (_MainDBViewModel.DeletedDBList.Count() == 0)
+			{
+				binTab.IsEnabled = false;
+				editTab.IsSelected = true;
+				//TODO: disable buttons
+			}
+		}
+		private bool checkIfEnableButtons(ObservableCollection<DBStructureViewModel> list)
+		{
+			if (list.Count == 0)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		private void enableDisableButtons(bool tmp)
+		{
+		}
+		//TODO: enable i disable buttony w edit i bin, kiedy to wywolac?
+		//TODO: search
+		private void search()
+		{
+			//TODO otwieramy nowe okno search -> add/edit
+			//zwaracam record(y)
+			//timer? mruganie?
+		}
+		private void deleteSelected()
+		{
+			if (_MainDBViewModel.DeleteDBSelectedItem != null)
+			{
+				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
+				if (_MainDBViewModel.PermDelete())
+				{
+					checkIfDisableBin();
+				}
+				//TODO - zapisać lisę
+				//TODO - restore all
+				//TODO: przegladanie paczkami
 			}
 		}
 		#endregion
@@ -272,6 +316,10 @@ namespace projektZaliczeniowy
 				try
 				{
 					openFile();
+					if(checkIfEnableButtons(_MainDBViewModel.DBList))
+					{
+						//TODO: enable buttons
+					}
 				}
 				catch (Exception)
 				{
@@ -312,6 +360,10 @@ namespace projektZaliczeniowy
 				try
 				{
 					createNewDB();
+					if(checkIfEnableButtons(_MainDBViewModel.DBList))
+					{
+						//TODO eneable buttons
+					}
 				}
 				catch (Exception ex)
 				{
@@ -347,6 +399,51 @@ namespace projektZaliczeniowy
 		{
 			editSelected();
 		}
+		private void editDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			editSelected();
+		}
+		private void deleteSelectedClick(object sender, RoutedEventArgs e)
+		{
+			if (_MainDBViewModel.DBSelectedItem != null)
+			{
+				var tmpForSelectedItem = _MainDBViewModel.DBSelectedItem;
+				if (_MainDBViewModel.Delete())
+				{
+					binTab.IsEnabled = true;
+					binDataGrid.IsEnabled = true;
+					this.fileSaved = false;
+					if(checkIfEnableButtons(_MainDBViewModel.DBList))
+					{
+						//TODO: disable buttons
+					}
+				}
+				//TODO - zmiana id
+			}
+		}
+		private void binTabRestoreClick(object sender, RoutedEventArgs e)
+		{
+			//TODO: restore
+			if (_MainDBViewModel.DeleteDBSelectedItem != null)
+			{
+				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
+				if (_MainDBViewModel.Restore())
+				{
+					checkIfDisableBin();
+					this.fileSaved = false;
+				}
+				//TODO - zmiana id?	-> funkcja bo bedzie w kilku miejscach				
+			}
+		}
+		private void binTabDeleteClick(object sender, RoutedEventArgs e)
+		{
+			deleteSelected();
+		}				
+		/// <summary>
+		/// Podstawowa funkcja do obsługi klawiatury (skrótów) w głównym oknie
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.O))
@@ -396,10 +493,6 @@ namespace projektZaliczeniowy
 			{
 				this.Close();
 			}
-		}
-		private void editDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-		{
-			editSelected();
 		}
 		#endregion
 	}
