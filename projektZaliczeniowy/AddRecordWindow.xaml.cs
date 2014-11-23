@@ -18,8 +18,11 @@ namespace projektZaliczeniowy
 				return AddedRecord != null;
 			}
 		}
+
 		private int _innerID = default(int);
-		public int InnerID {
+
+		public int InnerID
+		{
 			get
 			{
 				return _innerID;
@@ -69,9 +72,11 @@ namespace projektZaliczeniowy
 			userRecord();
 			this.Close();
 		}
-		#endregion
+
+		#endregion Methods
 
 		#region Events
+
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
@@ -100,6 +105,6 @@ namespace projektZaliczeniowy
 			addNewRecord();
 		}
 
-		#endregion
+		#endregion Events
 	}
 }

@@ -7,8 +7,15 @@ namespace projektZaliczeniowy
 {
 	public class DataBaseXML
 	{
+		#region Fields
+
 		public XDocument dataBaseFileX;
 		public string dataBasePath = string.Empty;
+
+		#endregion Fields
+
+		#region Constructors
+
 		public DataBaseXML(string path)
 		{
 			try
@@ -20,19 +27,48 @@ namespace projektZaliczeniowy
 				throw;
 			}
 		}
+
 		public DataBaseXML()
 		{
 			try
 			{
-				this.dataBaseFileX = new XDocument(
-					new XDeclaration("1.0", "utf-8", "yes"),
-					new XElement("persons"));
+				this.dataBaseFileX =
+					new XDocument(
+						new XDeclaration("1.0", "utf-8", "yes"),
+						new XElement("persons")
+					);
 			}
 			catch (Exception)
 			{
 				throw;
 			}
 		}
+
+		#endregion Constructors
+
+		#region Methods
+
+		public void addToDataBaseXML(DBStructureViewModel record)
+		{
+			try
+			{
+				this.dataBaseFileX.Element("persons").Add(
+					new XElement("person",
+						new XElement("ID", record.Id),
+						new XElement("pesel", record.Pesel),
+						new XElement("name", record.Name),
+						new XElement("familyName", record.FamilyName),
+						new XElement("birthDate", record.BirthDate),
+						new XElement("phone", record.Phone)
+						)
+					);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
 		public List<DBStructureViewModel> LoadDB()
 		{
 			try
@@ -44,6 +80,13 @@ namespace projektZaliczeniowy
 				throw;
 			}
 		}
+
+		internal void Save(string p)
+		{
+			this.dataBaseFileX.Save(p);
+			Logger.Instance.LogInfo(string.Format("File saved in {0}", p));
+		}
+
 		/// <summary>
 		/// bierzemy XDocument z pliku, wrzucamy przez ref do listy
 		/// </summary>
@@ -70,32 +113,8 @@ namespace projektZaliczeniowy
 			{
 				throw;
 			}
-		}		
-		public void addToDataBaseXML(DBStructureViewModel record)
-		{
-			try
-			{
-				this.dataBaseFileX.Element("persons").Add(
-					new XElement("person",
-						new XElement("ID", record.Id), 
-						new XElement("pesel", record.Pesel),
-						new XElement("name", record.Name),
-						new XElement("familyName", record.FamilyName),
-						new XElement("birthDate", record.BirthDate),
-						new XElement("phone", record.Phone)
-						)
-					);
-			}
-			catch (Exception)
-			{
-				throw;
-			}
 		}
 
-		internal void Save(string p)
-		{
-			this.dataBaseFileX.Save(p);
-			Logger.Instance.LogInfo(string.Format("File saved in {0}", p));
-		}
+		#endregion Methods
 	}
 }

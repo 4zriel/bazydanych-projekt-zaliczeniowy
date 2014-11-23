@@ -1,24 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace projektZaliczeniowy
 {
 	public class MainDBViewModel : ViewModelBase
 	{
+		#region Constructors
+
 		public MainDBViewModel()
 		{
 			_MainDBXml = new DataBaseXML();
+			_DeletedDBXml = new DataBaseXML();
 			_DBList = new ObservableCollection<DBStructureViewModel>();
 			_DeletedDBList = new ObservableCollection<DBStructureViewModel>();
+			_FiltredDBList = new ObservableCollection<DBStructureViewModel>();
+			_filterString = default(string);
 		}
 
-		private DataBaseXML _MainDBXml;
+		#endregion Constructors
+
+		//private ICollectionView _DBListView;
+		//public ICollectionView DBListView
+		//{
+		//	get
+		//	{
+		//		return _DBListView;
+		//	}
+		//	set
+		//	{
+		//		_DBListView = value;
+		//		NotifyMe("DBListView");
+		//	}
+		//}
+
+		#region Properties
 
 		private string _DataBasePath = default(string);
+
 		public string DataBasePath
 		{
 			get
@@ -30,23 +49,9 @@ namespace projektZaliczeniowy
 				_DataBasePath = value;
 			}
 		}
-		public void CreateNewDB()
-		{
-			try
-			{
-				_MainDBXml = new DataBaseXML();
-				Logger.Instance.LogInfo("DataBase created");
-				DBList.Clear();
-				_DataBasePath = default(string);
-			}
-			catch (Exception ex)
-			{
-
-				Logger.Instance.LogError(ex.Message);
-			}
-		}
 
 		private ObservableCollection<DBStructureViewModel> _DBList = default(ObservableCollection<DBStructureViewModel>);
+
 		public ObservableCollection<DBStructureViewModel> DBList
 		{
 			get
@@ -59,21 +64,9 @@ namespace projektZaliczeniowy
 				NotifyMe("DBList");
 			}
 		}
-		private ObservableCollection<DBStructureViewModel> _DeletedDBList = default(ObservableCollection<DBStructureViewModel>);
-		public ObservableCollection<DBStructureViewModel> DeletedDBList
-		{
-			get
-			{
-				return _DeletedDBList;
-			}
-			set
-			{
-				_DeletedDBList = value;
-				NotifyMe("DeletedDBList");
-			}
-		}
 
 		private DBStructureViewModel _DBSelectedItem = default(DBStructureViewModel);
+
 		public DBStructureViewModel DBSelectedItem
 		{
 			get
@@ -86,7 +79,9 @@ namespace projektZaliczeniowy
 				NotifyMe("DBSelectedItem");
 			}
 		}
+
 		private DBStructureViewModel _DeleteDBSelectedItem = default(DBStructureViewModel);
+
 		public DBStructureViewModel DeleteDBSelectedItem
 		{
 			get
@@ -100,37 +95,64 @@ namespace projektZaliczeniowy
 			}
 		}
 
-		public void Save()
+		private ObservableCollection<DBStructureViewModel> _DeletedDBList = default(ObservableCollection<DBStructureViewModel>);
+
+		public ObservableCollection<DBStructureViewModel> DeletedDBList
 		{
-			try
+			get
 			{
-				foreach (var item in DBList)
+				return _DeletedDBList;
+			}
+			set
+			{
+				_DeletedDBList = value;
+				NotifyMe("DeletedDBList");
+			}
+		}
+
+		private string _filterString;
+
+		public string FilterString
+		{
+			get
+			{
+				return _filterString;
+			}
+			set
+			{
+				_filterString = value;
+				NotifyMe("FilterString");
+				if (value.Count() >= 1)
 				{
-					_MainDBXml.addToDataBaseXML(item);
+					filtrMe(value, true);
 				}
-				_MainDBXml.Save(_DataBasePath);
-				_MainDBXml = new DataBaseXML();
-			}
-			catch (Exception ex)
-			{
-				
-				Logger.Instance.LogError(ex.Message);
+				else
+					filtrMe(value, false);
 			}
 		}
-		public void Load()
+
+		private ObservableCollection<DBStructureViewModel> _FiltredDBList = default(ObservableCollection<DBStructureViewModel>);
+
+		public ObservableCollection<DBStructureViewModel> FiltredDBList
 		{
-			try
+			get
 			{
-				_MainDBXml = new DataBaseXML(DataBasePath);
-				DBList = new ObservableCollection<DBStructureViewModel>(_MainDBXml.LoadDB());
-				_MainDBXml = new DataBaseXML();
+				return _FiltredDBList;
 			}
-			catch (Exception ex)
+			set
 			{
-				
-				Logger.Instance.LogError(ex.Message);
+				_FiltredDBList = value;
+				NotifyMe("FiltredList");
 			}
 		}
+
+		private DataBaseXML _MainDBXml;
+		private DataBaseXML _DeletedDBXml;
+
+		#endregion Properties
+
+		#region Methods
+
 		public void AddNewRecord(DBStructureViewModel record)
 		{
 			try
@@ -142,6 +164,22 @@ namespace projektZaliczeniowy
 				Logger.Instance.LogError(ex.Message);
 			}
 		}
+
+		public void CreateNewDB()
+		{
+			try
+			{
+				_MainDBXml = new DataBaseXML();
+				Logger.Instance.LogInfo("DataBase created");
+				DBList.Clear();
+				_DataBasePath = default(string);
+			}
+			catch (Exception ex)
+			{
+				Logger.Instance.LogError(ex.Message);
+			}
+		}
+
 		public bool Delete()
 		{
 			try
@@ -153,28 +191,66 @@ namespace projektZaliczeniowy
 			}
 			catch (Exception ex)
 			{
-				
 				Logger.Instance.LogError(ex.Message);
 				return false;
 			}
 		}
-		//TODO Delete() i obsługa kosza tj. nowa lista z deleted, obsluga list.delete poczym od razu listdel.add(deleted), flaga deleted? plus pierdolki jak dodanie do grida binding etc
 
-		internal bool Restore()
+		public void Load()
 		{
 			try
 			{
-				DBList.Add(this.DeleteDBSelectedItem);
-				Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", this.DeleteDBSelectedItem.FamilyName, this.DeleteDBSelectedItem.Name, this.DeleteDBSelectedItem.Phone, this.DeleteDBSelectedItem.BirthDate, this.DeleteDBSelectedItem.Pesel));
-				DeletedDBList.Remove(this.DeleteDBSelectedItem);
-				return true;
+				_MainDBXml = new DataBaseXML(DataBasePath);
+				DBList = new ObservableCollection<DBStructureViewModel>(_MainDBXml.LoadDB());
+				FiltredDBList = DBList;
+				_MainDBXml = new DataBaseXML();
+				_DeletedDBXml = new DataBaseXML(_DataBasePath + "_deleted");
+				DeletedDBList = new ObservableCollection<DBStructureViewModel>(_DeletedDBXml.LoadDB());
+				_DeletedDBXml = new DataBaseXML();
 			}
 			catch (Exception ex)
 			{
 				Logger.Instance.LogError(ex.Message);
-				return false;
 			}
-			//TODO: poprawki
+		}
+
+		public void Save()
+		{
+			try
+			{
+				foreach (var item in DBList)
+				{
+					_MainDBXml.addToDataBaseXML(item);
+				}
+				_MainDBXml.Save(_DataBasePath);
+				_MainDBXml = new DataBaseXML();
+				foreach (var item in DeletedDBList)
+				{
+					_DeletedDBXml.addToDataBaseXML(item);
+				}
+				_DeletedDBXml.Save(_DataBasePath + "_deleted");
+				_DeletedDBXml = new DataBaseXML();
+			}
+			catch (Exception ex)
+			{
+				Logger.Instance.LogError(ex.Message);
+			}
+		}
+
+		internal void ChangeIDs()
+		{
+			int i = 1;
+			foreach (var item in DBList)
+			{
+				item.Id = i;
+				i++;
+			}
+			i = 1;
+			foreach (var item in DeletedDBList)
+			{
+				item.Id = i;
+				i++;
+			}
 		}
 
 		internal bool PermDelete()
@@ -191,5 +267,90 @@ namespace projektZaliczeniowy
 				return false;
 			}
 		}
+
+		internal bool PermDeleteAll()
+		{
+			try
+			{
+				foreach (var item in DeletedDBList)
+				{
+					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
+					DeletedDBList.Remove(item);
+				}
+				return true; ;
+			}
+			catch (Exception ex)
+			{
+				Logger.Instance.LogError(ex.Message);
+				return false;
+			}
+		}
+
+		internal bool Restore()
+		{
+			try
+			{
+				DBList.Add(this.DeleteDBSelectedItem);
+				Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", this.DeleteDBSelectedItem.FamilyName, this.DeleteDBSelectedItem.Name, this.DeleteDBSelectedItem.Phone, this.DeleteDBSelectedItem.BirthDate, this.DeleteDBSelectedItem.Pesel));
+				DeletedDBList.Remove(this.DeleteDBSelectedItem);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Instance.LogError(ex.Message);
+				return false;
+			}
+		}
+
+		internal bool RestoreAll()
+		{
+			try
+			{
+				foreach (var item in DeletedDBList)
+				{
+					DBList.Add(item);
+					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
+					DeletedDBList.Remove(item);
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Instance.LogError(ex.Message);
+				return false;
+			}
+		}
+
+		private void filtrMe(string filtr, bool isFull)
+		{
+			if (isFull)
+				foreach (var item in FiltredDBList)
+				{
+					if (item.Name.Contains(filtr))
+					{
+						continue;
+					}
+					else if (item.FamilyName.Contains(filtr))
+					{
+						continue;
+					}
+					else if (item.Pesel.Contains(filtr))
+					{
+						continue;
+					}
+					else if (item.Phone.Contains(filtr))
+					{
+						continue;
+					}
+					else
+					{
+						FiltredDBList.Remove(item);
+					}
+				}
+			else
+				FiltredDBList = DBList;
+		}
+
+		#endregion Methods
 	}
 }

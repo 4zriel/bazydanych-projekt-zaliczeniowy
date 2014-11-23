@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace projektZaliczeniowy
 {
@@ -19,9 +9,9 @@ namespace projektZaliczeniowy
 	/// </summary>
 	public partial class EditRecordWindow : Window
 	{
-
 		public DBStructureViewModel EditedRecord = default(DBStructureViewModel);
 		public DBStructureViewModel SelectedRecord = default(DBStructureViewModel);
+
 		public bool Edited
 		{
 			get
@@ -29,6 +19,7 @@ namespace projektZaliczeniowy
 				return EditedRecord != null;
 			}
 		}
+
 		public EditRecordWindow(DBStructureViewModel tmpSelectedRecord)
 		{
 			InitializeComponent();
@@ -39,6 +30,7 @@ namespace projektZaliczeniowy
 		}
 
 		#region Methods
+
 		private void selectedToEditConverter(DBStructureViewModel selectedToEdited)
 		{
 			try
@@ -55,11 +47,13 @@ namespace projektZaliczeniowy
 				throw;
 			}
 		}
+
 		private void closeWithoutAdding()
 		{
 			this.Close();
 			Logger.Instance.LogInfo("Editing record canceled");
 		}
+
 		private DBStructureViewModel editSaveRecord()
 		{
 			Logger.Instance.LogInfo("Trying to save record");
@@ -74,19 +68,23 @@ namespace projektZaliczeniowy
 			};
 			Logger.Instance.LogInfo(string.Format("User edited record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", EditedRecord.FamilyName, EditedRecord.Name, EditedRecord.Phone, EditedRecord.BirthDate, EditedRecord.Pesel));
 			return this.EditedRecord;
-		} 
-		#endregion
-		
+		}
+
+		#endregion Methods
+
 		#region Events
+
 		private void editButtoncancel_Click(object sender, RoutedEventArgs e)
 		{
 			closeWithoutAdding();
 		}
+
 		private void editButtonSave_Click(object sender, RoutedEventArgs e)
 		{
 			editSaveRecord();
 			this.Close();
 		}
+
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
@@ -98,7 +96,8 @@ namespace projektZaliczeniowy
 			{
 				closeWithoutAdding();
 			}
-		} 
-		#endregion
+		}
+
+		#endregion Events
 	}
 }
