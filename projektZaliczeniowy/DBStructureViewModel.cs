@@ -5,15 +5,19 @@ namespace projektZaliczeniowy
 	public class DBStructureViewModel : ViewModelBase
 	{
 		//private static int GlobalIdCounter = 0;//TODO: przerobić to bo ID się źle generuje
+
 		#region contructor
+
 		public DBStructureViewModel()
 		{
 			//GlobalIdCounter++;
 			//Id = GlobalIdCounter;
 		}
-		#endregion
-		
+
+		#endregion contructor
+
 		private string _Name = default(string);
+
 		public string Name
 		{
 			get
@@ -28,6 +32,7 @@ namespace projektZaliczeniowy
 		}
 
 		private string _FamilyName = default(string);
+
 		public string FamilyName
 		{
 			get
@@ -42,6 +47,7 @@ namespace projektZaliczeniowy
 		}
 
 		private DateTime _BirthDate = default(DateTime);
+
 		public DateTime BirthDate
 		{
 			get
@@ -56,6 +62,7 @@ namespace projektZaliczeniowy
 		}
 
 		private string _Phone = default(string);
+
 		public string Phone
 		{
 			get
@@ -70,6 +77,7 @@ namespace projektZaliczeniowy
 		}
 
 		private string _Pesel = default(string);
+
 		public string Pesel
 		{
 			get
@@ -84,6 +92,7 @@ namespace projektZaliczeniowy
 		}
 
 		private int _Id = default(int);
+
 		public int Id
 		{
 			get

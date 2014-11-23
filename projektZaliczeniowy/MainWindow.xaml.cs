@@ -1,19 +1,10 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace projektZaliczeniowy
 {
@@ -23,11 +14,15 @@ namespace projektZaliczeniowy
 	public partial class MainWindow : Window
 	{
 		#region properties
+
+		public string Version = "0.8";
+		private MainDBViewModel _MainDBViewModel = new MainDBViewModel();
 		private bool fileOpened = false;
 		private bool fileSaved = false;
-		public string Version = "0.8";
-		private MainDBViewModel _MainDBViewModel = new MainDBViewModel(); 
-		#endregion
+
+		#endregion properties
+
+		#region Constructors
 
 		public MainWindow()
 		{
@@ -38,59 +33,10 @@ namespace projektZaliczeniowy
 			_MainDBViewModel = (MainDBViewModel)base.DataContext;
 		}
 
+		#endregion Constructors
+
 		#region Methods
-		private bool saveFileMenuDialog()
-		{
-			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath))
-				return saveDialogCreator();
-			else
-				_MainDBViewModel.Save();
 
-			return true;
-		}
-		private bool saveDialogCreator()
-		{
-			SaveFileDialog saveDialog = new SaveFileDialog();
-			saveDialog.DefaultExt = "*.dbfile";
-			saveDialog.FileName = "";
-			saveDialog.Filter = "DateBase files|*.dbfile";
-			bool? saveDialogShow = saveDialog.ShowDialog();
-
-			if (saveDialogShow.HasValue && saveDialogShow.Value)
-			{
-				_MainDBViewModel.DataBasePath = saveDialog.FileName;
-				_MainDBViewModel.Save();
-				Logger.Instance.LogInfo(string.Format("User saved DB in {0}", saveDialog.FileName));
-
-				return true;
-			}
-			else
-				return false;
-		}
-		/// <summary>
-		/// głowna metoda odpowiadająca za odświeżanie tabów
-		/// </summary>
-		/// <returns></returns>
-		private bool refreshLogTab()
-		{
-			if (!(listBoxForLogs.Items.IsEmpty))
-			{
-				listBoxForLogs.Items.Clear();
-			}
-			foreach (var item in Logger.Instance.LogList)
-			{
-				listBoxForLogs.Items.Add(item);
-			}
-			return true;
-		}
-		private void enableTabsAndButton()
-		{
-			homeTab.IsEnabled = true;
-			editTab.IsEnabled = true;
-			subMenuSaveAs.IsEnabled = true;
-			subMenuSave.IsEnabled = true;
-			editDataGrid.IsEnabled = true;
-		}
 		/// <summary>
 		/// obsługa wyjątków przez messageboxa
 		/// </summary>
@@ -101,34 +47,61 @@ namespace projektZaliczeniowy
 			MessageBoxResult result = MessageBox.Show(string.Format("{1}\n{0}", ex.ToString(), message), string.Format("Error! {0}", message), MessageBoxButton.OK, MessageBoxImage.Stop);
 			Logger.Instance.LogError(string.Format("{1}!\n{0}", ex.Message, message));
 		}
-		private bool checkIfYouCanQuit()
+
+		private void checkIfDisableBin()
 		{
-			if (!this.fileOpened)
+			if (_MainDBViewModel.DeletedDBList.Count() == 0)
+			{
+				binTab.IsEnabled = false;
+				editTab.IsSelected = true;
+				//TODO: disable buttons
+			}
+		}
+
+		private bool checkIfEnableButtons(ObservableCollection<DBStructureViewModel> list)
+		{
+			if (list.Count == 0)
+			{
+				return false;
+			}
+			else
 			{
 				return true;
 			}
-			else if (!this.fileSaved)
+		}
+
+		private bool checkIfYouCanCreateNewOne()
+		{
+			if (this.fileOpened)
 			{
-				MessageBoxResult result = MessageBox.Show("Do You really want to close without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-				if (result == MessageBoxResult.Yes)
+				if (!this.fileSaved)
 				{
-					Logger.Instance.LogWarning("User closed app without saveing DB file...");
 					return true;
 				}
 				else
 				{
-					if (saveFileMenuDialog())
+					MessageBoxResult result = MessageBox.Show("Do You really want to create new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+					if (result == MessageBoxResult.Yes)
 					{
-						this.fileSaved = true;
-						Logger.Instance.LogInfo("User tried to close without save...");
+						Logger.Instance.LogWarning("User create other DB without saving DB file...");
 						return true;
 					}
-					return false;
+					else
+					{
+						if (saveFileMenuDialog())
+						{
+							this.fileSaved = true;
+							Logger.Instance.LogInfo("User tried to create new one...");
+							return true;
+						}
+						return false;
+					}
 				}
 			}
 			else
 				return true;
 		}
+
 		private bool checkIfYouCanOpen()
 		{
 			if (this.fileOpened)
@@ -160,37 +133,36 @@ namespace projektZaliczeniowy
 			else
 				return true;
 		}
-		private bool checkIfYouCanCreateNewOne()
+
+		private bool checkIfYouCanQuit()
 		{
-			if (this.fileOpened)
+			if (!this.fileOpened)
 			{
-				if (!this.fileSaved)
+				return true;
+			}
+			else if (!this.fileSaved)
+			{
+				MessageBoxResult result = MessageBox.Show("Do You really want to close without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+				if (result == MessageBoxResult.Yes)
 				{
+					Logger.Instance.LogWarning("User closed app without saveing DB file...");
 					return true;
 				}
 				else
 				{
-					MessageBoxResult result = MessageBox.Show("Do You really want to create new one without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-					if (result == MessageBoxResult.Yes)
+					if (saveFileMenuDialog())
 					{
-						Logger.Instance.LogWarning("User create other DB without saving DB file...");
+						this.fileSaved = true;
+						Logger.Instance.LogInfo("User tried to close without save...");
 						return true;
 					}
-					else
-					{
-						if (saveFileMenuDialog())
-						{
-							this.fileSaved = true;
-							Logger.Instance.LogInfo("User tried to create new one...");
-							return true;
-						}
-						return false;
-					}
+					return false;
 				}
 			}
 			else
 				return true;
-		}		
+		}
+
 		private void createNewDB()
 		{
 			_MainDBViewModel.CreateNewDB();
@@ -198,25 +170,19 @@ namespace projektZaliczeniowy
 			editTab.IsSelected = true;
 			this.fileOpened = true;
 		}
-		private void openFile()
+
+		private void deleteSelected()
 		{
-			OpenFileDialog openDialog = new OpenFileDialog();
-			openDialog.DefaultExt = "*.dbfile";
-			openDialog.FileName = "";
-			openDialog.Filter = "DateBase files|*.dbfile";
-			bool? openDialogShow = openDialog.ShowDialog();
-			_MainDBViewModel.DBList.Clear();
-			if (openDialogShow.HasValue && openDialogShow.Value)
+			if (_MainDBViewModel.DeleteDBSelectedItem != null)
 			{
-				_MainDBViewModel.DataBasePath = openDialog.FileName;
-				Logger.Instance.LogInfo(string.Format("User opened file {0}", openDialog.FileName));
-				_MainDBViewModel.Load();
-				this.fileOpened = true;
-				this.fileSaved = true;
-				enableTabsAndButton();
-				homeTab.IsSelected = true;
+				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
+				if (_MainDBViewModel.PermDelete())
+				{
+					checkIfDisableBin();
+				}
 			}
 		}
+
 		private void editSelected()
 		{
 			//TODO: napisac działające z bindingiem commad
@@ -237,29 +203,94 @@ namespace projektZaliczeniowy
 				}
 			}
 		}
-		private void checkIfDisableBin()
-		{
-			if (_MainDBViewModel.DeletedDBList.Count() == 0)
-			{
-				binTab.IsEnabled = false;
-				editTab.IsSelected = true;
-				//TODO: disable buttons
-			}
-		}
-		private bool checkIfEnableButtons(ObservableCollection<DBStructureViewModel> list)
-		{
-			if (list.Count == 0)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
+
 		private void enableDisableButtons(bool tmp)
 		{
 		}
+
+		private void enableTabsAndButton()
+		{
+			homeTab.IsEnabled = true;
+			editTab.IsEnabled = true;
+			subMenuSaveAs.IsEnabled = true;
+			subMenuSave.IsEnabled = true;
+			editDataGrid.IsEnabled = true;
+			subMenuPrint.IsEnabled = true;
+		}
+
+		private void openFile()
+		{
+			OpenFileDialog openDialog = new OpenFileDialog();
+			openDialog.DefaultExt = "*.dbfile";
+			openDialog.FileName = "";
+			openDialog.Filter = "DateBase files|*.dbfile";
+			bool? openDialogShow = openDialog.ShowDialog();
+			_MainDBViewModel.DBList.Clear();
+			if (openDialogShow.HasValue && openDialogShow.Value)
+			{
+				_MainDBViewModel.DataBasePath = openDialog.FileName;
+				Logger.Instance.LogInfo(string.Format("User opened file {0}", openDialog.FileName));
+				_MainDBViewModel.Load();
+				this.fileOpened = true;
+				this.fileSaved = true;
+				enableTabsAndButton();
+				homeTab.IsSelected = true;
+				if (_MainDBViewModel.DeletedDBList.Count != 0)
+				{
+					binTab.IsEnabled = true;
+					binDataGrid.IsEnabled = true;
+				}
+				_MainDBViewModel.ChangeIDs();
+			}
+		}
+
+		/// <summary>
+		/// głowna metoda odpowiadająca za odświeżanie tabów
+		/// </summary>
+		/// <returns></returns>
+		private bool refreshLogTab()
+		{
+			if (!(listBoxForLogs.Items.IsEmpty))
+			{
+				listBoxForLogs.Items.Clear();
+			}
+			foreach (var item in Logger.Instance.LogList)
+			{
+				listBoxForLogs.Items.Add(item);
+			}
+			return true;
+		}
+
+		private bool saveDialogCreator()
+		{
+			SaveFileDialog saveDialog = new SaveFileDialog();
+			saveDialog.DefaultExt = "*.dbfile";
+			saveDialog.FileName = "";
+			saveDialog.Filter = "DateBase files|*.dbfile";
+			bool? saveDialogShow = saveDialog.ShowDialog();
+
+			if (saveDialogShow.HasValue && saveDialogShow.Value)
+			{
+				_MainDBViewModel.DataBasePath = saveDialog.FileName;
+				_MainDBViewModel.Save();
+				Logger.Instance.LogInfo(string.Format("User saved DB in {0}", saveDialog.FileName));
+
+				return true;
+			}
+			else
+				return false;
+		}
+
+		private bool saveFileMenuDialog()
+		{
+			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath))
+				return saveDialogCreator();
+			else
+				_MainDBViewModel.Save();
+
+			return true;
+		}
+
 		//TODO: enable i disable buttony w edit i bin, kiedy to wywolac?
 		//TODO: search
 		private void search()
@@ -268,23 +299,19 @@ namespace projektZaliczeniowy
 			//zwaracam record(y)
 			//timer? mruganie?
 		}
-		private void deleteSelected()
-		{
-			if (_MainDBViewModel.DeleteDBSelectedItem != null)
-			{
-				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
-				if (_MainDBViewModel.PermDelete())
-				{
-					checkIfDisableBin();
-				}
-				//TODO - zapisać lisę
-				//TODO - restore all
-				//TODO: przegladanie paczkami
-			}
-		}
-		#endregion
+
+		#endregion Methods
 
 		#region Events
+
+		private void appIsClosing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			if (checkIfYouCanQuit())
+				e.Cancel = false;
+			else
+				e.Cancel = true;
+		}
+
 		private void tab_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.OriginalSource is TabControl)
@@ -298,42 +325,78 @@ namespace projektZaliczeniowy
 				}
 			}
 		}
-		private void appIsClosing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			if (checkIfYouCanQuit())
-				e.Cancel = false;
-			else
-				e.Cancel = true;
-		}
-		#endregion
+
+		#endregion Events
 
 		#region ClickEvents
 
-		private void subMenuOpenClick(object sender, RoutedEventArgs e)
+		private void binTabDeleteAllClick(object sender, RoutedEventArgs e)
 		{
-			if (checkIfYouCanOpen())
+			_MainDBViewModel.PermDeleteAll();
+			_MainDBViewModel.ChangeIDs();
+		}
+
+		private void binTabDeleteClick(object sender, RoutedEventArgs e)
+		{
+			deleteSelected();
+		}
+
+		private void binTabRestoreAllClick(object sender, RoutedEventArgs e)
+		{
+			_MainDBViewModel.RestoreAll();
+			_MainDBViewModel.ChangeIDs();
+		}
+
+		private void binTabRestoreClick(object sender, RoutedEventArgs e)
+		{
+			if (_MainDBViewModel.DeleteDBSelectedItem != null)
 			{
-				try
+				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
+				if (_MainDBViewModel.Restore())
 				{
-					openFile();
-					if(checkIfEnableButtons(_MainDBViewModel.DBList))
-					{
-						//TODO: enable buttons
-					}
+					checkIfDisableBin();
+					this.fileSaved = false;
 				}
-				catch (Exception)
-				{
-					throw;
-				}
+				_MainDBViewModel.ChangeIDs();
 			}
 		}
+
+		private void deleteSelectedClick(object sender, RoutedEventArgs e)
+		{
+			if (_MainDBViewModel.DBSelectedItem != null)
+			{
+				var tmpForSelectedItem = _MainDBViewModel.DBSelectedItem;
+				if (_MainDBViewModel.Delete())
+				{
+					binTab.IsEnabled = true;
+					binDataGrid.IsEnabled = true;
+					this.fileSaved = false;
+					if (checkIfEnableButtons(_MainDBViewModel.DBList))
+					{
+						//TODO: disable buttons
+					}
+				}
+				_MainDBViewModel.ChangeIDs();
+			}
+		}
+
+		private void editDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			editSelected();
+		}
+
+		private void editSelectedClick(object sender, RoutedEventArgs e)
+		{
+			editSelected();
+		}
+
 		private void editTabAddClick(object sender, RoutedEventArgs e)
 		{
 			Logger.Instance.LogInfo("User tried to add record");
-			int tmp =default(int);
+			int tmp = default(int);
 			if (_MainDBViewModel.DBList.Count != 0)
 			{
-				tmp = _MainDBViewModel.DBList.Last().Id;				
+				tmp = _MainDBViewModel.DBList.Last().Id;
 			}
 			var addWindow = new AddRecordWindow(tmp);
 			addWindow.Owner = this;
@@ -344,15 +407,13 @@ namespace projektZaliczeniowy
 				this.fileSaved = false;
 			}
 		}
-		private void subMenuSaveAsClick(object sender, RoutedEventArgs e)
+
+		private void subMenuAboutClick(object sender, RoutedEventArgs e)
 		{
-			if (saveDialogCreator())
-			{
-				this.fileSaved = true;
-				Logger.Instance.LogInfo("DataBase file saved");
-				Logger.Instance.LogWarning("User use save as option");
-			}
+			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.Version), "About", MessageBoxButton.OK, MessageBoxImage.Information);
+			Logger.Instance.LogInfo("About showed");
 		}
+
 		private void subMenuCreateClick(object sender, RoutedEventArgs e)
 		{
 			if (checkIfYouCanCreateNewOne())
@@ -360,7 +421,7 @@ namespace projektZaliczeniowy
 				try
 				{
 					createNewDB();
-					if(checkIfEnableButtons(_MainDBViewModel.DBList))
+					if (checkIfEnableButtons(_MainDBViewModel.DBList))
 					{
 						//TODO eneable buttons
 					}
@@ -371,6 +432,41 @@ namespace projektZaliczeniowy
 				}
 			}
 		}
+
+		private void subMenuOpenClick(object sender, RoutedEventArgs e)
+		{
+			if (checkIfYouCanOpen())
+			{
+				try
+				{
+					openFile();
+					if (checkIfEnableButtons(_MainDBViewModel.DBList))
+					{
+						//TODO: enable buttons
+					}
+				}
+				catch (Exception)
+				{
+					throw;
+				}
+			}
+		}
+
+		private void subMenuQuitClick(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
+
+		private void subMenuSaveAsClick(object sender, RoutedEventArgs e)
+		{
+			if (saveDialogCreator())
+			{
+				this.fileSaved = true;
+				Logger.Instance.LogInfo("DataBase file saved");
+				Logger.Instance.LogWarning("User use save as option");
+			}
+		}
+
 		private void subMenuSaveClick(object sender, RoutedEventArgs e)
 		{
 			try
@@ -386,59 +482,7 @@ namespace projektZaliczeniowy
 				messageError(ex, "Błąd zapisu pliku!");
 			}
 		}
-		private void subMenuQuitClick(object sender, RoutedEventArgs e)
-		{
-			this.Close();
-		}
-		private void subMenuAboutClick(object sender, RoutedEventArgs e)
-		{
-			MessageBoxResult result = MessageBox.Show(string.Format("Projekt zaliczeniowy z przedmiotu języki programowania obiektowego\nAutor: Rafał Kłosek, 3BZI\nwersja {0}", this.Version), "About", MessageBoxButton.OK, MessageBoxImage.Information);
-			Logger.Instance.LogInfo("About showed");
-		}
-		private void editSelectedClick(object sender, RoutedEventArgs e)
-		{
-			editSelected();
-		}
-		private void editDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-		{
-			editSelected();
-		}
-		private void deleteSelectedClick(object sender, RoutedEventArgs e)
-		{
-			if (_MainDBViewModel.DBSelectedItem != null)
-			{
-				var tmpForSelectedItem = _MainDBViewModel.DBSelectedItem;
-				if (_MainDBViewModel.Delete())
-				{
-					binTab.IsEnabled = true;
-					binDataGrid.IsEnabled = true;
-					this.fileSaved = false;
-					if(checkIfEnableButtons(_MainDBViewModel.DBList))
-					{
-						//TODO: disable buttons
-					}
-				}
-				//TODO - zmiana id
-			}
-		}
-		private void binTabRestoreClick(object sender, RoutedEventArgs e)
-		{
-			//TODO: restore
-			if (_MainDBViewModel.DeleteDBSelectedItem != null)
-			{
-				var tmpForSelectedItem = _MainDBViewModel.DeleteDBSelectedItem;
-				if (_MainDBViewModel.Restore())
-				{
-					checkIfDisableBin();
-					this.fileSaved = false;
-				}
-				//TODO - zmiana id?	-> funkcja bo bedzie w kilku miejscach				
-			}
-		}
-		private void binTabDeleteClick(object sender, RoutedEventArgs e)
-		{
-			deleteSelected();
-		}				
+
 		/// <summary>
 		/// Podstawowa funkcja do obsługi klawiatury (skrótów) w głównym oknie
 		/// </summary>
@@ -494,6 +538,27 @@ namespace projektZaliczeniowy
 				this.Close();
 			}
 		}
-		#endregion
+
+		#endregion ClickEvents
+
+		private void subMenuPrintClick(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var printDialog = new PrintDialog();
+				bool? printResult = printDialog.ShowDialog();
+				if (printResult == true)
+				{
+					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
+					homeDataGrid.Measure(pageSize);
+					homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
+					printDialog.PrintVisual(homeDataGrid, Title);
+				}
+			}//TODO: obsługa pełniejsza tj tylko jak co otwarte jak edytowane, moze tylko wybrane? tylko z edit? wybor co?
+			catch (Exception ex)
+			{
+				messageError(ex, "Error during printing process!");
+			}
+		}
 	}
 }

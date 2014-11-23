@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace projektZaliczeniowy
 {
@@ -23,6 +12,7 @@ namespace projektZaliczeniowy
 		{
 			InitializeComponent();
 		}
+
 		public bool Searched
 		{
 			get
@@ -30,8 +20,10 @@ namespace projektZaliczeniowy
 				return SearchedRecord != null;
 			}
 		}
+
 		public DBStructureViewModel _SearchedRecord = default(DBStructureViewModel);
-		public DBStructureViewModel SearchedRecord 
+
+		public DBStructureViewModel SearchedRecord
 		{
 			get
 			{

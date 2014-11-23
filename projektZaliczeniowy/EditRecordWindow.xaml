@@ -31,10 +31,9 @@
 			TextWrapping="Wrap"
 			VerticalAlignment="Top"
 			Width="120"
-			TabIndex="0" 
+			TabIndex="0"
 			DataContext="{Binding SelectedRecord}"
-			Text="{Binding Name, Mode=TwoWay}"
-			/>
+			Text="{Binding Name, Mode=TwoWay}" />
 		<DatePicker
 			x:Name="editBirthText"
 			HorizontalAlignment="Left"

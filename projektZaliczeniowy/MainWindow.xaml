@@ -90,8 +90,8 @@
 					Background="#FF4E4E50"
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
-					Click="subMenuCreateClick" 
-					InputGestureText="Ctrl+N"/>
+					Click="subMenuCreateClick"
+					InputGestureText="Ctrl+N" />
 				<MenuItem
 					x:Name="subMenuOpen"
 					Header="Open file..."
@@ -99,8 +99,8 @@
 					Background="#FF4E4E50"
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
-					Click="subMenuOpenClick" 
-					InputGestureText="Ctrl+O"/>
+					Click="subMenuOpenClick"
+					InputGestureText="Ctrl+O" />
 				<MenuItem
 					x:Name="subMenuSave"
 					Header="Save"
@@ -110,7 +110,7 @@
 					BorderBrush="#FF4E4E50"
 					Click="subMenuSaveClick"
 					IsEnabled="False"
-					InputGestureText="Ctrl+S"/>
+					InputGestureText="Ctrl+S" />
 				<MenuItem
 					x:Name="subMenuSaveAs"
 					Header="Save as"
@@ -124,6 +124,15 @@
 					HorizontalAlignment="Left"
 					Height="2" />
 				<MenuItem
+					x:Name="subMenuPrint"
+					Header="Print database"
+					HorizontalAlignment="Stretch"
+					Background="#FF4E4E50"
+					Foreground="White"
+					BorderBrush="#FF4E4E50"
+					Click="subMenuPrintClick"
+					IsEnabled="False" />
+				<MenuItem
 					x:Name="subMenuQuit"
 					Header="Quit"
 					HorizontalAlignment="Stretch"
@@ -131,7 +140,7 @@
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
 					Click="subMenuQuitClick"
-					InputGestureText="Ctrl+Q"/>
+					InputGestureText="Ctrl+Q" />
 			</MenuItem>
 			<MenuItem
 				x:Name="MenuSort"
@@ -299,7 +308,7 @@
 							CanUserAddRows="False"
 							CanUserDeleteRows="False"
 							SelectionMode="Single"
-							ItemsSource="{Binding DBList, Mode=TwoWay}"
+							ItemsSource="{Binding FiltredDBList, Mode=TwoWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
 							FontSize="18"
 							AlternatingRowBackground="#FF8FC377" MouseDoubleClick="editDataGrid_MouseDoubleClick">
@@ -366,6 +375,17 @@
 							Padding="3"
 							Width="100"
 							Click="deleteSelectedClick" />
+						<TextBox
+							x:Name="SearchBox"
+							HorizontalAlignment="Left"
+							Margin="416,494,0,0"
+							TextWrapping="Wrap"
+							Text="{Binding FilterString, Mode=TwoWay}"
+							VerticalAlignment="Top"
+							Height="33"
+							Width="97"
+							Background="White"
+							IsEnabled="True" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -408,45 +428,39 @@
 							ItemsSource="{Binding DeletedDBList, Mode=TwoWay}"
 							SelectedItem="{Binding DeleteDBSelectedItem, Mode=TwoWay}"
 							FontSize="18"
-							AlternatingRowBackground="#FF8FC377" 
+							AlternatingRowBackground="#FF8FC377"
 							IsReadOnly="False">
 							<DataGrid.Columns>
 								<DataGridTextColumn
 									x:Name="binID"
 									Header="ID"
 									Width="Auto"
-									Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binFName"
 									Header="Family name"
 									Width="150"
-									Binding="{Binding FamilyName, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding FamilyName, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binName"
 									Header="Name"
 									Width="150"
-									Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binDate"
 									Header="Birth date"
 									Width="100"
-									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binPhone"
 									Header="Phone number"
 									Width="Auto"
-									Binding="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binPesel"
 									Header="PESEL"
 									Width="Auto"
-									Binding="{Binding Pesel, UpdateSourceTrigger=PropertyChanged}"
-									/>
+									Binding="{Binding Pesel, UpdateSourceTrigger=PropertyChanged}" />
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
@@ -457,15 +471,29 @@
 							HorizontalAlignment="Left"
 							Margin="40,494,0,10"
 							Padding="3"
-							Width="150"
+							Width="140"
 							Click="binTabRestoreClick" />
 						<Button
-							Content="Permanently delete selected record"
+							Content="Delete selected record"
 							HorizontalAlignment="Left"
-							Margin="213,494,0,10"
+							Margin="197,494,0,10"
 							Padding="3"
-							Width="203"
+							Width="140"
 							Click="binTabDeleteClick" />
+						<Button
+							Content="Restore all record"
+							HorizontalAlignment="Left"
+							Margin="357,494,0,10"
+							Padding="3"
+							Width="140"
+							Click="binTabRestoreAllClick" />
+						<Button
+							Content="Delete all record"
+							HorizontalAlignment="Left"
+							Margin="518,494,0,10"
+							Padding="3"
+							Width="140"
+							Click="binTabDeleteAllClick" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -482,7 +510,6 @@
 				<Grid
 					Background="#FF4E4E50"
 					Margin="0,-3,0,-2">
-
 				</Grid>
 			</TabItem>
 			<TabItem
