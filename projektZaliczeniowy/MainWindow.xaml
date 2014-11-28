@@ -308,7 +308,7 @@
 							CanUserAddRows="False"
 							CanUserDeleteRows="False"
 							SelectionMode="Single"
-							ItemsSource="{Binding FiltredDBList, Mode=TwoWay}"
+							ItemsSource="{Binding DBList, Mode=OneWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
 							FontSize="18"
 							AlternatingRowBackground="#FF8FC377" MouseDoubleClick="editDataGrid_MouseDoubleClick">
@@ -355,37 +355,67 @@
 					<Grid
 						Grid.RowSpan="2">
 						<Button
-							Content="Add new Record"
 							HorizontalAlignment="Left"
 							Margin="40,494,0,10"
 							Padding="3"
-							Width="100"
-							Click="editTabAddClick" />
+							Width="40"
+							Click="editTabAddClick">
+							<DockPanel ToolTip="Add new record">
+								<Image Source="Resources/menu/plus.png" />
+							</DockPanel>
+						</Button>
 						<Button
-							Content="Edit selected"
 							HorizontalAlignment="Left"
-							Margin="160,494,0,10"
+							Margin="110,494,0,10"
 							Padding="3"
-							Width="100"
-							Click="editSelectedClick" />
+							Width="40"
+							Click="editSelectedClick">
+							<DockPanel ToolTip="Edit record">
+								<Image Source="Resources/menu/pen.png" />
+							</DockPanel>
+						</Button>
 						<Button
-							Content="Delete selected"
 							HorizontalAlignment="Left"
-							Margin="282,494,0,10"
+							Margin="180,494,0,10"
 							Padding="3"
-							Width="100"
-							Click="deleteSelectedClick" />
+							Width="40"
+							Click="deleteSelectedClick">
+							<DockPanel ToolTip="Deleted record">
+								<Image Source="Resources/menu/x.png" />
+							</DockPanel>
+						</Button>
 						<TextBox
 							x:Name="SearchBox"
 							HorizontalAlignment="Left"
-							Margin="416,494,0,0"
+							Margin="251,494,0,0"
 							TextWrapping="Wrap"
-							Text="{Binding FilterString, Mode=TwoWay}"
 							VerticalAlignment="Top"
 							Height="33"
-							Width="97"
+							Width="190"
 							Background="White"
-							IsEnabled="True" />
+							IsEnabled="True"
+							Text="{Binding FilterString, Mode=TwoWay}" />
+						<Button
+							HorizontalAlignment="Left"
+							Margin="460,494,0,10"
+							Padding="3"
+							Width="40"
+							Click="searchClick">
+							<DockPanel ToolTip="Search record(s)">
+								<Image Source="Resources/menu/glass.png" />
+							</DockPanel>
+						</Button>
+						<TextBlock
+							x:Name="SerachBlock"
+							HorizontalAlignment="Left"
+							Margin="518,494,0,0"
+							TextWrapping="Wrap"
+							VerticalAlignment="Top"
+							Height="33"
+							Width="181"
+							Background="AntiqueWhite"
+							Text="Searching option are:
+							Field=Value;Field2=Value etc" TextAlignment="Center" FontSize="11" FontStretch="Condensed" FontWeight="Light" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -467,33 +497,45 @@
 					<Grid
 						Grid.RowSpan="2">
 						<Button
-							Content="Restore selected record"
 							HorizontalAlignment="Left"
 							Margin="40,494,0,10"
 							Padding="3"
-							Width="140"
-							Click="binTabRestoreClick" />
+							Width="40"
+							Click="binTabRestoreClick">
+							<DockPanel ToolTip="Restore selected record">
+								<Image Source="Resources/menu/refresh.png" />
+							</DockPanel>
+						</Button>
 						<Button
-							Content="Delete selected record"
 							HorizontalAlignment="Left"
-							Margin="197,494,0,10"
+							Margin="108,494,0,10"
 							Padding="3"
-							Width="140"
-							Click="binTabDeleteClick" />
+							Width="40"
+							Click="binTabDeleteClick">
+							<DockPanel ToolTip="Delete selected record">
+								<Image Source="Resources/menu/x.png" />
+							</DockPanel>
+						</Button>
 						<Button
-							Content="Restore all record"
 							HorizontalAlignment="Left"
-							Margin="357,494,0,10"
+							Margin="562,494,0,10"
 							Padding="3"
-							Width="140"
-							Click="binTabRestoreAllClick" />
+							Width="40"
+							Click="binTabRestoreAllClick">
+							<DockPanel ToolTip="Restore all record">
+								<Image Source="Resources/menu/reload.png" />
+							</DockPanel>
+						</Button>
 						<Button
-							Content="Delete all record"
 							HorizontalAlignment="Left"
-							Margin="518,494,0,10"
+							Margin="634,494,0,10"
 							Padding="3"
-							Width="140"
-							Click="binTabDeleteAllClick" />
+							Width="40"
+							Click="binTabDeleteAllClick">
+							<DockPanel ToolTip="Delete all record">
+								<Image Source="Resources/menu/erase.png" />
+							</DockPanel>
+						</Button>
 					</Grid>
 				</Grid>
 			</TabItem>
