@@ -15,10 +15,11 @@ namespace projektZaliczeniowy
 	{
 		#region properties
 
-		public string Version = "0.8";
+		public string Version = "0.85";
 		private MainDBViewModel _MainDBViewModel = new MainDBViewModel();
 		private bool fileOpened = false;
 		private bool fileSaved = false;
+		private bool searchedFile = false;
 
 		#endregion properties
 
@@ -292,12 +293,25 @@ namespace projektZaliczeniowy
 		}
 
 		//TODO: enable i disable buttony w edit i bin, kiedy to wywolac?
-		//TODO: search
-		private void search()
+
+		private void subMenuPrintClick(object sender, RoutedEventArgs e)
 		{
-			//TODO otwieramy nowe okno search -> add/edit
-			//zwaracam record(y)
-			//timer? mruganie?
+			try
+			{
+				var printDialog = new PrintDialog();
+				bool? printResult = printDialog.ShowDialog();
+				if (printResult == true)
+				{
+					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
+					homeDataGrid.Measure(pageSize);
+					homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
+					printDialog.PrintVisual(homeDataGrid, Title);
+				}
+			}//TODO: obsługa pełniejsza tj tylko jak co otwarte jak edytowane, moze tylko wybrane? tylko z edit? wybor co?
+			catch (Exception ex)
+			{
+				messageError(ex, "Error during printing process!");
+			}
 		}
 
 		#endregion Methods
@@ -483,6 +497,39 @@ namespace projektZaliczeniowy
 			}
 		}
 
+		private void searchClick(object sender, RoutedEventArgs e)
+		{
+			//TODO:search
+			if (!this.searchedFile)
+			{
+				try
+				{
+					if (!string.IsNullOrEmpty(_MainDBViewModel.FilterString))
+					{
+						_MainDBViewModel.Search();
+						editDataGrid.ItemsSource = _MainDBViewModel.FiltredDBList;
+						editDataGrid.Items.Refresh();
+						_MainDBViewModel.FilterString = default(string);
+						SearchBox.IsEnabled = false;
+						this.searchedFile = true;
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBoxResult result = MessageBox.Show(ex.Message.ToString(), "Empty search result", MessageBoxButton.OK, MessageBoxImage.Stop);
+					Logger.Instance.LogWarning(ex.Message.ToString());
+				}
+			}
+			else
+			{
+				editDataGrid.ItemsSource = _MainDBViewModel.DBList;
+				editDataGrid.Items.Refresh();
+				_MainDBViewModel.FiltredDBList.Clear();
+				SearchBox.IsEnabled = true;
+				this.searchedFile = false;
+			}
+		}
+
 		/// <summary>
 		/// Podstawowa funkcja do obsługi klawiatury (skrótów) w głównym oknie
 		/// </summary>
@@ -540,25 +587,5 @@ namespace projektZaliczeniowy
 		}
 
 		#endregion ClickEvents
-
-		private void subMenuPrintClick(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				var printDialog = new PrintDialog();
-				bool? printResult = printDialog.ShowDialog();
-				if (printResult == true)
-				{
-					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
-					homeDataGrid.Measure(pageSize);
-					homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
-					printDialog.PrintVisual(homeDataGrid, Title);
-				}
-			}//TODO: obsługa pełniejsza tj tylko jak co otwarte jak edytowane, moze tylko wybrane? tylko z edit? wybor co?
-			catch (Exception ex)
-			{
-				messageError(ex, "Error during printing process!");
-			}
-		}
 	}
 }

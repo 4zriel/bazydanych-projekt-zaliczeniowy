@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace projektZaliczeniowy
 {
@@ -122,12 +121,12 @@ namespace projektZaliczeniowy
 			{
 				_filterString = value;
 				NotifyMe("FilterString");
-				if (value.Count() >= 1)
-				{
-					filtrMe(value, true);
-				}
-				else
-					filtrMe(value, false);
+				//if (value.Count() >= 1)
+				//{
+				//	filtrMe(value, true);
+				//}
+				//else
+				//	filtrMe(value, false);
 			}
 		}
 
@@ -202,7 +201,6 @@ namespace projektZaliczeniowy
 			{
 				_MainDBXml = new DataBaseXML(DataBasePath);
 				DBList = new ObservableCollection<DBStructureViewModel>(_MainDBXml.LoadDB());
-				FiltredDBList = DBList;
 				_MainDBXml = new DataBaseXML();
 				_DeletedDBXml = new DataBaseXML(_DataBasePath + "_deleted");
 				DeletedDBList = new ObservableCollection<DBStructureViewModel>(_DeletedDBXml.LoadDB());
@@ -347,10 +345,114 @@ namespace projektZaliczeniowy
 						FiltredDBList.Remove(item);
 					}
 				}
-			else
-				FiltredDBList = DBList;
 		}
 
 		#endregion Methods
+
+		internal void Search()
+		{
+			try
+			{
+				string[] tmpSearch = default(string[]);
+				tmpSearch = FilterString.Split(';');
+				DBStructureViewModel searchedRecord = new DBStructureViewModel();
+				foreach (var item in tmpSearch)
+				{
+					searchedRecord = fillMyDBRecord(item);
+					checkIfExiste(searchedRecord);
+				}
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
+
+		private void checkIfExiste(DBStructureViewModel searchedRecord)
+		{
+			foreach (var item in this.DBList)
+			{
+				if (FiltredDBList.Contains(item))
+				{
+					continue;
+				}
+				else
+				{
+					if (!string.IsNullOrEmpty(searchedRecord.Name))
+					{
+						if ((item.Name).ToLower().Contains(searchedRecord.Name))
+						{
+							FiltredDBList.Add(item);
+							break;
+						}
+					}
+					else if (!string.IsNullOrEmpty(searchedRecord.FamilyName))
+					{
+						if ((item.FamilyName).ToLower().Contains(searchedRecord.FamilyName))
+						{
+							FiltredDBList.Add(item);
+							break;
+						}
+					}
+					else if (!string.IsNullOrEmpty(searchedRecord.Pesel))
+					{
+						if ((item.Pesel).ToLower().Contains(searchedRecord.Pesel))
+						{
+							FiltredDBList.Add(item);
+							break;
+						}
+					}
+					else if (!string.IsNullOrEmpty(searchedRecord.Phone))
+					{
+						if ((item.Phone).ToLower().Contains(searchedRecord.Phone))
+						{
+							FiltredDBList.Add(item);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		private DBStructureViewModel fillMyDBRecord(string tmpSearch)
+		{
+			string name, familyName, phone, pesel;
+			string[] tmp = tmpSearch.Split('=');
+			DBStructureViewModel tmpRecord = new DBStructureViewModel();
+			string caseString = tmp[0];
+			switch (caseString.ToLower())
+			{
+				case ("name"):
+					{
+						name = tmp[1];
+						tmpRecord.Name = name;
+						break;
+					}
+				case ("family name"):
+					{
+						familyName = tmp[1];
+						tmpRecord.FamilyName = familyName;
+						break;
+					}
+				case ("phone number"):
+					{
+						phone = tmp[1];
+						tmpRecord.Phone = phone;
+						break;
+					}
+				case ("pesel"):
+					{
+						pesel = tmp[1];
+						tmpRecord.Pesel = pesel;
+						break;
+					}
+				default:
+					{
+						Exception ex = new Exception("No records found or wrong syntax");
+						throw ex;
+					}
+			}
+			return tmpRecord;
+		}
 	}
 }
