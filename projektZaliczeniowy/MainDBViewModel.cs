@@ -184,8 +184,13 @@ namespace projektZaliczeniowy
 			try
 			{
 				DeletedDBList.Add(this.DBSelectedItem);
+				var tmpSelected = this.DBSelectedItem;
 				Logger.Instance.LogInfo(string.Format("Deleted record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", this.DBSelectedItem.FamilyName, this.DBSelectedItem.Name, this.DBSelectedItem.Phone, this.DBSelectedItem.BirthDate, this.DBSelectedItem.Pesel));
 				DBList.Remove(DBSelectedItem);
+				if (FiltredDBList.Contains(tmpSelected))
+				{
+					FiltredDBList.Remove(tmpSelected);
+				}
 				return true;
 			}
 			catch (Exception ex)
@@ -319,36 +324,6 @@ namespace projektZaliczeniowy
 			}
 		}
 
-		private void filtrMe(string filtr, bool isFull)
-		{
-			if (isFull)
-				foreach (var item in FiltredDBList)
-				{
-					if (item.Name.Contains(filtr))
-					{
-						continue;
-					}
-					else if (item.FamilyName.Contains(filtr))
-					{
-						continue;
-					}
-					else if (item.Pesel.Contains(filtr))
-					{
-						continue;
-					}
-					else if (item.Phone.Contains(filtr))
-					{
-						continue;
-					}
-					else
-					{
-						FiltredDBList.Remove(item);
-					}
-				}
-		}
-
-		#endregion Methods
-
 		internal void Search()
 		{
 			try
@@ -383,7 +358,7 @@ namespace projektZaliczeniowy
 						if ((item.Name).ToLower().Contains(searchedRecord.Name))
 						{
 							FiltredDBList.Add(item);
-							break;
+							continue;
 						}
 					}
 					else if (!string.IsNullOrEmpty(searchedRecord.FamilyName))
@@ -391,7 +366,7 @@ namespace projektZaliczeniowy
 						if ((item.FamilyName).ToLower().Contains(searchedRecord.FamilyName))
 						{
 							FiltredDBList.Add(item);
-							break;
+							continue;
 						}
 					}
 					else if (!string.IsNullOrEmpty(searchedRecord.Pesel))
@@ -399,7 +374,7 @@ namespace projektZaliczeniowy
 						if ((item.Pesel).ToLower().Contains(searchedRecord.Pesel))
 						{
 							FiltredDBList.Add(item);
-							break;
+							continue;
 						}
 					}
 					else if (!string.IsNullOrEmpty(searchedRecord.Phone))
@@ -407,7 +382,15 @@ namespace projektZaliczeniowy
 						if ((item.Phone).ToLower().Contains(searchedRecord.Phone))
 						{
 							FiltredDBList.Add(item);
-							break;
+							continue;
+						}
+					}
+					else if (searchedRecord.BirthDate > DateTime.MinValue)
+					{
+						if (DateTime.Compare(item.BirthDate, searchedRecord.BirthDate) == 0)
+						{
+							FiltredDBList.Add(item);
+							continue;
 						}
 					}
 				}
@@ -417,6 +400,7 @@ namespace projektZaliczeniowy
 		private DBStructureViewModel fillMyDBRecord(string tmpSearch)
 		{
 			string name, familyName, phone, pesel;
+			DateTime birth;
 			string[] tmp = tmpSearch.Split('=');
 			DBStructureViewModel tmpRecord = new DBStructureViewModel();
 			string caseString = tmp[0];
@@ -446,6 +430,12 @@ namespace projektZaliczeniowy
 						tmpRecord.Pesel = pesel;
 						break;
 					}
+				case ("birth date"):
+					{
+						birth = Convert.ToDateTime(tmp[1]);
+						tmpRecord.BirthDate = birth;
+						break;
+					}
 				default:
 					{
 						Exception ex = new Exception("No records found or wrong syntax");
@@ -454,5 +444,7 @@ namespace projektZaliczeniowy
 			}
 			return tmpRecord;
 		}
+
+		#endregion Methods
 	}
 }

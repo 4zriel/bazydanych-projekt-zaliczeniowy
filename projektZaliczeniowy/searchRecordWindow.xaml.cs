@@ -67,7 +67,6 @@ namespace projektZaliczeniowy
 
 		private void searchRecord()
 		{
-			//TODO CONVERTER :if(string.IsNullOrEmpty(searchNameText.Text)
 			if (!string.IsNullOrEmpty(searchNameText.Text))
 				this.SearchedRecord.Name = searchNameText.Text;
 			if (!string.IsNullOrEmpty(searchFamilyText.Text))

@@ -30,7 +30,8 @@
 			TextWrapping="Wrap"
 			VerticalAlignment="Top"
 			Width="120"
-			TabIndex="0" />
+			TabIndex="0">
+		</TextBox>
 		<DatePicker
 			x:Name="addBirthText"
 			HorizontalAlignment="Left"

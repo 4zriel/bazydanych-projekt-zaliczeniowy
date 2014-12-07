@@ -178,9 +178,8 @@
 			<TabItem
 				x:Name="homeTab"
 				HorizontalAlignment="Stretch"
-				VerticalAlignment="Top"
 				ToolTip="Home tab"
-				IsEnabled="False">
+				IsEnabled="False" Margin="-2,-2,0,2">
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/book.png"
@@ -356,7 +355,7 @@
 						Grid.RowSpan="2">
 						<Button
 							HorizontalAlignment="Left"
-							Margin="40,494,0,10"
+							Margin="27,494,0,10"
 							Padding="3"
 							Width="40"
 							Click="editTabAddClick">
@@ -366,7 +365,7 @@
 						</Button>
 						<Button
 							HorizontalAlignment="Left"
-							Margin="110,494,0,10"
+							Margin="85,494,0,10"
 							Padding="3"
 							Width="40"
 							Click="editSelectedClick">
@@ -376,7 +375,7 @@
 						</Button>
 						<Button
 							HorizontalAlignment="Left"
-							Margin="180,494,0,10"
+							Margin="140,494,0,10"
 							Padding="3"
 							Width="40"
 							Click="deleteSelectedClick">
@@ -387,22 +386,33 @@
 						<TextBox
 							x:Name="SearchBox"
 							HorizontalAlignment="Left"
-							Margin="251,494,0,0"
+							Margin="194,494,0,0"
 							TextWrapping="Wrap"
 							VerticalAlignment="Top"
 							Height="33"
 							Width="190"
 							Background="White"
 							IsEnabled="True"
-							Text="{Binding FilterString, Mode=TwoWay}" />
+							Text="{Binding FilterString, Mode=TwoWay}"
+							ToolTip="Fields are: name, family name, phone number, pesel, birth date" />
 						<Button
 							HorizontalAlignment="Left"
-							Margin="460,494,0,10"
+							Margin="403,494,0,10"
 							Padding="3"
 							Width="40"
 							Click="searchClick">
 							<DockPanel ToolTip="Search record(s)">
 								<Image Source="Resources/menu/glass.png" />
+							</DockPanel>
+						</Button>
+						<Button
+							HorizontalAlignment="Left"
+							Margin="461,494,0,10"
+							Padding="3"
+							Width="40"
+							Click="sortClick">
+							<DockPanel ToolTip="Sorting record(s)">
+								<Image Source="Resources/menu/sort.png" />
 							</DockPanel>
 						</Button>
 						<TextBlock
@@ -414,7 +424,7 @@
 							Height="33"
 							Width="181"
 							Background="AntiqueWhite"
-							Text="Searching option are:
+							Text="Searching/sorting option are:
 							Field=Value;Field2=Value etc" TextAlignment="Center" FontSize="11" FontStretch="Condensed" FontWeight="Light" />
 					</Grid>
 				</Grid>
@@ -547,7 +557,7 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/cog.png"
-						Stretch="Fill" />
+						Stretch="Fill" Margin="1,3,-1,-3" />
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
