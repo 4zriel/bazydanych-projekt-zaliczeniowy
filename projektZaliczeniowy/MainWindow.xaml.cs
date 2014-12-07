@@ -15,11 +15,11 @@ namespace projektZaliczeniowy
 	{
 		#region properties
 
-		public string Version = "0.85";
+		public string Version = "0.17";
 		private MainDBViewModel _MainDBViewModel = new MainDBViewModel();
 		private bool fileOpened = false;
 		private bool fileSaved = false;
-		private bool searchedFile = false;
+		private bool isRecordSearched = false;
 
 		#endregion properties
 
@@ -184,6 +184,7 @@ namespace projektZaliczeniowy
 			}
 		}
 
+		//TODO: sortowanie - jak search ten samo przekazywanie ale potem słownik i sort w słowniku? dblist.name then slownik po name sort po family -> tablica slownikow.
 		private void editSelected()
 		{
 			//TODO: napisac działające z bindingiem commad
@@ -195,12 +196,17 @@ namespace projektZaliczeniowy
 				var editWindow = new EditRecordWindow(_MainDBViewModel.DBSelectedItem);
 				editWindow.Owner = this;
 				editWindow.ShowDialog();
-
 				if (editWindow.Edited)
 				{
 					_MainDBViewModel.DBList.Remove(_MainDBViewModel.DBSelectedItem);
 					_MainDBViewModel.DBList.Add(editWindow.EditedRecord);
+					if (_MainDBViewModel.FiltredDBList.Contains(tmpForSelectedItem))
+					{
+						_MainDBViewModel.FiltredDBList.Remove(tmpForSelectedItem);
+						_MainDBViewModel.FiltredDBList.Add(editWindow.EditedRecord);
+					}
 					this.fileSaved = false;
+					editDataGrid.Items.Refresh();
 				}
 			}
 		}
@@ -294,26 +300,6 @@ namespace projektZaliczeniowy
 
 		//TODO: enable i disable buttony w edit i bin, kiedy to wywolac?
 
-		private void subMenuPrintClick(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				var printDialog = new PrintDialog();
-				bool? printResult = printDialog.ShowDialog();
-				if (printResult == true)
-				{
-					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
-					homeDataGrid.Measure(pageSize);
-					homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
-					printDialog.PrintVisual(homeDataGrid, Title);
-				}
-			}//TODO: obsługa pełniejsza tj tylko jak co otwarte jak edytowane, moze tylko wybrane? tylko z edit? wybor co?
-			catch (Exception ex)
-			{
-				messageError(ex, "Error during printing process!");
-			}
-		}
-
 		#endregion Methods
 
 		#region Events
@@ -391,6 +377,7 @@ namespace projektZaliczeniowy
 					}
 				}
 				_MainDBViewModel.ChangeIDs();
+				editDataGrid.Items.Refresh();
 			}
 		}
 
@@ -466,6 +453,34 @@ namespace projektZaliczeniowy
 			}
 		}
 
+		private void subMenuPrintClick(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var printDialog = new PrintDialog();
+				bool? printResult = printDialog.ShowDialog();
+				if (printResult == true)
+				{
+					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
+					homeDataGrid.Measure(pageSize);
+					if (this.isRecordSearched)
+					{
+						editDataGrid.Arrange(new Rect(editDataGrid.Columns.Count(), _MainDBViewModel.FiltredDBList.Count(), pageSize.Width, pageSize.Height));
+						printDialog.PrintVisual(editDataGrid, Title);
+					}
+					else
+					{
+						homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
+						printDialog.PrintVisual(homeDataGrid, Title);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				messageError(ex, "Error during printing process!");
+			}
+		}
+
 		private void subMenuQuitClick(object sender, RoutedEventArgs e)
 		{
 			this.Close();
@@ -500,18 +515,21 @@ namespace projektZaliczeniowy
 		private void searchClick(object sender, RoutedEventArgs e)
 		{
 			//TODO:search
-			if (!this.searchedFile)
+			if (!this.isRecordSearched)
 			{
 				try
 				{
 					if (!string.IsNullOrEmpty(_MainDBViewModel.FilterString))
 					{
+						Logger.Instance.LogInfo(string.Format("User tried to search: {0}", _MainDBViewModel.FilterString));
 						_MainDBViewModel.Search();
+						//_MainDBViewModel.ChangeIDs();
 						editDataGrid.ItemsSource = _MainDBViewModel.FiltredDBList;
+						Logger.Instance.LogInfo(string.Format("Founded {0} record(s)", _MainDBViewModel.FiltredDBList.Count.ToString()));
 						editDataGrid.Items.Refresh();
 						_MainDBViewModel.FilterString = default(string);
 						SearchBox.IsEnabled = false;
-						this.searchedFile = true;
+						this.isRecordSearched = true;
 					}
 				}
 				catch (Exception ex)
@@ -522,11 +540,13 @@ namespace projektZaliczeniowy
 			}
 			else
 			{
+				//_MainDBViewModel.ChangeIDs();
 				editDataGrid.ItemsSource = _MainDBViewModel.DBList;
 				editDataGrid.Items.Refresh();
 				_MainDBViewModel.FiltredDBList.Clear();
 				SearchBox.IsEnabled = true;
-				this.searchedFile = false;
+				this.isRecordSearched = false;
+				Logger.Instance.LogInfo("SearchBox enabled");
 			}
 		}
 
@@ -587,5 +607,10 @@ namespace projektZaliczeniowy
 		}
 
 		#endregion ClickEvents
+
+		private void sortClick(object sender, RoutedEventArgs e)
+		{
+			throw new Exception();
+		}
 	}
 }

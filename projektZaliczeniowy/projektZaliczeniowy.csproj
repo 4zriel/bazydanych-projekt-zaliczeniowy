@@ -141,9 +141,6 @@
     <Resource Include="Resources\main_old.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\dbSchema.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\menu\x.png" />
     <Resource Include="Resources\menu\home.png" />
     <Resource Include="Resources\menu\arrow_right.png" />
