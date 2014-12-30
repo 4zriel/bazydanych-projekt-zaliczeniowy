@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 
 namespace projektZaliczeniowy
 {
@@ -15,6 +16,8 @@ namespace projektZaliczeniowy
 			_DeletedDBList = new ObservableCollection<DBStructureViewModel>();
 			_FiltredDBList = new ObservableCollection<DBStructureViewModel>();
 			_filterString = default(string);
+			_fileOpened = false;
+			_fileSaved = false;
 		}
 
 		#endregion Constructors
@@ -34,6 +37,36 @@ namespace projektZaliczeniowy
 		//}
 
 		#region Properties
+
+		private bool _fileSaved;
+
+		public bool fileSaved
+		{
+			get
+			{
+				return _fileSaved;
+			}
+			set
+			{
+				_fileSaved = value;
+				NotifyMe("FileSaved");
+			}
+		}
+
+		private bool _fileOpened;
+
+		public bool fileOpened
+		{
+			get
+			{
+				return _fileOpened;
+			}
+			set
+			{
+				_fileOpened = value;
+				NotifyMe("FileOpened");
+			}
+		}
 
 		private string _DataBasePath = default(string);
 
@@ -121,12 +154,6 @@ namespace projektZaliczeniowy
 			{
 				_filterString = value;
 				NotifyMe("FilterString");
-				//if (value.Count() >= 1)
-				//{
-				//	filtrMe(value, true);
-				//}
-				//else
-				//	filtrMe(value, false);
 			}
 		}
 
@@ -157,6 +184,7 @@ namespace projektZaliczeniowy
 			try
 			{
 				_DBList.Add(record);
+				fileSaved = false;
 			}
 			catch (Exception ex)
 			{
@@ -172,6 +200,8 @@ namespace projektZaliczeniowy
 				Logger.Instance.LogInfo("DataBase created");
 				DBList.Clear();
 				_DataBasePath = default(string);
+				fileSaved = false;
+				fileOpened = true;
 			}
 			catch (Exception ex)
 			{
@@ -191,6 +221,7 @@ namespace projektZaliczeniowy
 				{
 					FiltredDBList.Remove(tmpSelected);
 				}
+				fileSaved = false;
 				return true;
 			}
 			catch (Exception ex)
@@ -210,6 +241,8 @@ namespace projektZaliczeniowy
 				_DeletedDBXml = new DataBaseXML(_DataBasePath + "_deleted");
 				DeletedDBList = new ObservableCollection<DBStructureViewModel>(_DeletedDBXml.LoadDB());
 				_DeletedDBXml = new DataBaseXML();
+				fileOpened = true;
+				fileSaved = true;
 			}
 			catch (Exception ex)
 			{
@@ -233,6 +266,7 @@ namespace projektZaliczeniowy
 				}
 				_DeletedDBXml.Save(_DataBasePath + "_deleted");
 				_DeletedDBXml = new DataBaseXML();
+				fileSaved = true;
 			}
 			catch (Exception ex)
 			{
@@ -262,6 +296,7 @@ namespace projektZaliczeniowy
 			{
 				Logger.Instance.LogInfo(string.Format("Permanently deleted record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", this.DeleteDBSelectedItem.FamilyName, this.DeleteDBSelectedItem.Name, this.DeleteDBSelectedItem.Phone, this.DeleteDBSelectedItem.BirthDate, this.DeleteDBSelectedItem.Pesel));
 				DeletedDBList.Remove(this.DeleteDBSelectedItem);
+				fileSaved = false;
 				return true;
 			}
 			catch (Exception ex)
@@ -280,7 +315,8 @@ namespace projektZaliczeniowy
 					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
 					DeletedDBList.Remove(item);
 				}
-				return true; ;
+				fileSaved = false;
+				return true;
 			}
 			catch (Exception ex)
 			{
@@ -296,6 +332,7 @@ namespace projektZaliczeniowy
 				DBList.Add(this.DeleteDBSelectedItem);
 				Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", this.DeleteDBSelectedItem.FamilyName, this.DeleteDBSelectedItem.Name, this.DeleteDBSelectedItem.Phone, this.DeleteDBSelectedItem.BirthDate, this.DeleteDBSelectedItem.Pesel));
 				DeletedDBList.Remove(this.DeleteDBSelectedItem);
+				fileSaved = false;
 				return true;
 			}
 			catch (Exception ex)
@@ -315,6 +352,7 @@ namespace projektZaliczeniowy
 					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
 					DeletedDBList.Remove(item);
 				}
+				fileSaved = false;
 				return true;
 			}
 			catch (Exception ex)
@@ -328,6 +366,7 @@ namespace projektZaliczeniowy
 		{
 			try
 			{
+				Logger.Instance.LogInfo(string.Format("User tried to search: {0}", this.FilterString));
 				string[] tmpSearch = default(string[]);
 				tmpSearch = FilterString.Split(';');
 				DBStructureViewModel searchedRecord = new DBStructureViewModel();
@@ -337,9 +376,9 @@ namespace projektZaliczeniowy
 					checkIfExiste(searchedRecord);
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				throw ex;
+				throw;
 			}
 		}
 
@@ -404,30 +443,30 @@ namespace projektZaliczeniowy
 			string[] tmp = tmpSearch.Split('=');
 			DBStructureViewModel tmpRecord = new DBStructureViewModel();
 			string caseString = tmp[0];
-			switch (caseString.ToLower())
+			switch (caseString.ToLower().TrimEnd().TrimStart())
 			{
 				case ("name"):
 					{
 						name = tmp[1];
-						tmpRecord.Name = name;
+						tmpRecord.Name = name.ToLower();
 						break;
 					}
 				case ("family name"):
 					{
 						familyName = tmp[1];
-						tmpRecord.FamilyName = familyName;
+						tmpRecord.FamilyName = familyName.ToLower();
 						break;
 					}
 				case ("phone number"):
 					{
 						phone = tmp[1];
-						tmpRecord.Phone = phone;
+						tmpRecord.Phone = phone.ToLower();
 						break;
 					}
 				case ("pesel"):
 					{
 						pesel = tmp[1];
-						tmpRecord.Pesel = pesel;
+						tmpRecord.Pesel = pesel.ToLower();
 						break;
 					}
 				case ("birth date"):
@@ -446,5 +485,57 @@ namespace projektZaliczeniowy
 		}
 
 		#endregion Methods
+
+		internal Collection<string> Sort()
+		{
+			try
+			{
+				Logger.Instance.LogInfo(string.Format("User tried to sort: {0}", this.FilterString));
+				string[] tmpSearch = default(string[]);
+				tmpSearch = FilterString.Split(';');
+				Collection<string> sortList = new Collection<string>();
+				foreach (var item in tmpSearch)
+				{
+					switch (item.ToLower().TrimEnd().TrimStart())
+					{
+						case ("name"):
+							{
+								sortList.Add("Name");
+								break;
+							}
+						case ("family name"):
+							{
+								sortList.Add("FamilyName");
+								break;
+							}
+						case ("phone number"):
+							{
+								sortList.Add("Phone");
+								break;
+							}
+						case ("pesel"):
+							{
+								sortList.Add("Pesel");
+								break;
+							}
+						case ("birth date"):
+							{
+								sortList.Add("BirthDate");
+								break;
+							}
+						default:
+							{
+								Exception ex = new Exception("Wrong syntax");
+								throw ex;
+							}
+					}
+				}
+				return sortList;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 	}
 }

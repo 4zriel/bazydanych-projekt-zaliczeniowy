@@ -43,7 +43,6 @@
 			TabIndex="2"
 			FirstDayOfWeek="Monday"
 			ToolTip="Chose birth date"
-			DisplayDate="2014-10-25"
 			DisplayDateStart="1900-01-01"
 			DisplayDateEnd="2016-01-01" />
 		<TextBox
@@ -76,14 +75,15 @@
 			Grid.Row="1"
 			TabIndex="3" />
 		<TextBox
+			x:Name="AddErrorText"
 			HorizontalAlignment="Left"
-			Height="25"
+			Height="43"
 			Margin="162,29,0,0"
 			TextWrapping="Wrap"
 			VerticalAlignment="Top"
 			Width="120"
 			Grid.Row="2"
-			IsEnabled="False" />
+			IsEnabled="False" Grid.RowSpan="2" />
 		<TextBlock
 			HorizontalAlignment="Left"
 			Height="19"
@@ -133,11 +133,12 @@
 				Text="PESEL" /><Run
 				Text=":" /></TextBlock>
 		<TextBlock
+			x:Name="AddErrorBlock"
 			HorizontalAlignment="Left"
 			Height="19"
 			Margin="162,10,0,0"
 			TextWrapping="Wrap"
-			Text="TextBlock"
+			Text=""
 			VerticalAlignment="Top"
 			Width="120"
 			Grid.Row="2" />

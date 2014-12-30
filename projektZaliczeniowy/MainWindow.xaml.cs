@@ -1,9 +1,10 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace projektZaliczeniowy
@@ -15,11 +16,10 @@ namespace projektZaliczeniowy
 	{
 		#region properties
 
-		public string Version = "0.17";
-		private MainDBViewModel _MainDBViewModel = new MainDBViewModel();
-		private bool fileOpened = false;
-		private bool fileSaved = false;
+		public string Version = "0.8a";
+		public MainDBViewModel _MainDBViewModel = new MainDBViewModel();
 		private bool isRecordSearched = false;
+		private int sortCounter = 0;
 
 		#endregion properties
 
@@ -32,6 +32,7 @@ namespace projektZaliczeniowy
 			Logger.Instance.LogInfo("To start using application, select [Create new] or [Open] from [File] menu");
 			logTab.IsSelected = true; //TODO: może lepiej okno z wyborem create/open?
 			_MainDBViewModel = (MainDBViewModel)base.DataContext;
+			subMenuSave.IsEnabled = false;
 		}
 
 		#endregion Constructors
@@ -55,27 +56,14 @@ namespace projektZaliczeniowy
 			{
 				binTab.IsEnabled = false;
 				editTab.IsSelected = true;
-				//TODO: disable buttons
-			}
-		}
-
-		private bool checkIfEnableButtons(ObservableCollection<DBStructureViewModel> list)
-		{
-			if (list.Count == 0)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
 			}
 		}
 
 		private bool checkIfYouCanCreateNewOne()
 		{
-			if (this.fileOpened)
+			if (_MainDBViewModel.fileOpened)
 			{
-				if (!this.fileSaved)
+				if (_MainDBViewModel.fileSaved)
 				{
 					return true;
 				}
@@ -89,9 +77,8 @@ namespace projektZaliczeniowy
 					}
 					else
 					{
-						if (saveFileMenuDialog())
+						if (saveFileMenuDialog(false))
 						{
-							this.fileSaved = true;
 							Logger.Instance.LogInfo("User tried to create new one...");
 							return true;
 						}
@@ -105,9 +92,9 @@ namespace projektZaliczeniowy
 
 		private bool checkIfYouCanOpen()
 		{
-			if (this.fileOpened)
+			if (_MainDBViewModel.fileOpened)
 			{
-				if (this.fileSaved)
+				if (_MainDBViewModel.fileSaved)
 				{
 					return true;
 				}
@@ -121,9 +108,8 @@ namespace projektZaliczeniowy
 					}
 					else
 					{
-						if (saveFileMenuDialog())
+						if (saveFileMenuDialog(true))
 						{
-							this.fileSaved = true;
 							Logger.Instance.LogInfo("User tried to open new one...");
 							return true;
 						}
@@ -137,11 +123,11 @@ namespace projektZaliczeniowy
 
 		private bool checkIfYouCanQuit()
 		{
-			if (!this.fileOpened)
+			if (!_MainDBViewModel.fileOpened)
 			{
 				return true;
 			}
-			else if (!this.fileSaved)
+			else if (!_MainDBViewModel.fileSaved)
 			{
 				MessageBoxResult result = MessageBox.Show("Do You really want to close without saving?", "Warrning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 				if (result == MessageBoxResult.Yes)
@@ -151,9 +137,8 @@ namespace projektZaliczeniowy
 				}
 				else
 				{
-					if (saveFileMenuDialog())
+					if (saveFileMenuDialog(true))
 					{
-						this.fileSaved = true;
 						Logger.Instance.LogInfo("User tried to close without save...");
 						return true;
 					}
@@ -167,9 +152,8 @@ namespace projektZaliczeniowy
 		private void createNewDB()
 		{
 			_MainDBViewModel.CreateNewDB();
-			enableTabsAndButton();
+			enableTabs();
 			editTab.IsSelected = true;
-			this.fileOpened = true;
 		}
 
 		private void deleteSelected()
@@ -184,7 +168,6 @@ namespace projektZaliczeniowy
 			}
 		}
 
-		//TODO: sortowanie - jak search ten samo przekazywanie ale potem słownik i sort w słowniku? dblist.name then slownik po name sort po family -> tablica slownikow.
 		private void editSelected()
 		{
 			//TODO: napisac działające z bindingiem commad
@@ -205,7 +188,7 @@ namespace projektZaliczeniowy
 						_MainDBViewModel.FiltredDBList.Remove(tmpForSelectedItem);
 						_MainDBViewModel.FiltredDBList.Add(editWindow.EditedRecord);
 					}
-					this.fileSaved = false;
+					_MainDBViewModel.fileSaved = false;
 					editDataGrid.Items.Refresh();
 				}
 			}
@@ -215,14 +198,11 @@ namespace projektZaliczeniowy
 		{
 		}
 
-		private void enableTabsAndButton()
+		private void enableTabs()
 		{
 			homeTab.IsEnabled = true;
 			editTab.IsEnabled = true;
-			subMenuSaveAs.IsEnabled = true;
-			subMenuSave.IsEnabled = true;
 			editDataGrid.IsEnabled = true;
-			subMenuPrint.IsEnabled = true;
 		}
 
 		private void openFile()
@@ -232,15 +212,13 @@ namespace projektZaliczeniowy
 			openDialog.FileName = "";
 			openDialog.Filter = "DateBase files|*.dbfile";
 			bool? openDialogShow = openDialog.ShowDialog();
-			_MainDBViewModel.DBList.Clear();
 			if (openDialogShow.HasValue && openDialogShow.Value)
 			{
+				_MainDBViewModel.DBList.Clear();
 				_MainDBViewModel.DataBasePath = openDialog.FileName;
 				Logger.Instance.LogInfo(string.Format("User opened file {0}", openDialog.FileName));
 				_MainDBViewModel.Load();
-				this.fileOpened = true;
-				this.fileSaved = true;
-				enableTabsAndButton();
+				enableTabs();
 				homeTab.IsSelected = true;
 				if (_MainDBViewModel.DeletedDBList.Count != 0)
 				{
@@ -272,7 +250,10 @@ namespace projektZaliczeniowy
 		{
 			SaveFileDialog saveDialog = new SaveFileDialog();
 			saveDialog.DefaultExt = "*.dbfile";
-			saveDialog.FileName = "";
+			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath))
+				saveDialog.FileName = "";
+			else
+				saveDialog.FileName = _MainDBViewModel.DataBasePath;
 			saveDialog.Filter = "DateBase files|*.dbfile";
 			bool? saveDialogShow = saveDialog.ShowDialog();
 
@@ -288,9 +269,9 @@ namespace projektZaliczeniowy
 				return false;
 		}
 
-		private bool saveFileMenuDialog()
+		private bool saveFileMenuDialog(bool open)
 		{
-			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath))
+			if (string.IsNullOrEmpty(_MainDBViewModel.DataBasePath) || open)
 				return saveDialogCreator();
 			else
 				_MainDBViewModel.Save();
@@ -298,7 +279,33 @@ namespace projektZaliczeniowy
 			return true;
 		}
 
-		//TODO: enable i disable buttony w edit i bin, kiedy to wywolac?
+		private void print()
+		{
+			try
+			{
+				var printDialog = new PrintDialog();
+				bool? printResult = printDialog.ShowDialog();
+				if (printResult == true)
+				{
+					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
+					homeDataGrid.Measure(pageSize);
+					if (this.isRecordSearched)
+					{
+						editDataGrid.Arrange(new Rect(editDataGrid.Columns.Count(), _MainDBViewModel.FiltredDBList.Count(), pageSize.Width, pageSize.Height));
+						printDialog.PrintVisual(editDataGrid, Title);
+					}
+					else
+					{
+						homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
+						printDialog.PrintVisual(homeDataGrid, Title);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				messageError(ex, "Error during printing process!");
+			}
+		}
 
 		#endregion Methods
 
@@ -355,7 +362,6 @@ namespace projektZaliczeniowy
 				if (_MainDBViewModel.Restore())
 				{
 					checkIfDisableBin();
-					this.fileSaved = false;
 				}
 				_MainDBViewModel.ChangeIDs();
 			}
@@ -370,11 +376,6 @@ namespace projektZaliczeniowy
 				{
 					binTab.IsEnabled = true;
 					binDataGrid.IsEnabled = true;
-					this.fileSaved = false;
-					if (checkIfEnableButtons(_MainDBViewModel.DBList))
-					{
-						//TODO: disable buttons
-					}
 				}
 				_MainDBViewModel.ChangeIDs();
 				editDataGrid.Items.Refresh();
@@ -405,7 +406,6 @@ namespace projektZaliczeniowy
 			if (addWindow.Added)
 			{
 				_MainDBViewModel.AddNewRecord(addWindow.AddedRecord);
-				this.fileSaved = false;
 			}
 		}
 
@@ -422,10 +422,6 @@ namespace projektZaliczeniowy
 				try
 				{
 					createNewDB();
-					if (checkIfEnableButtons(_MainDBViewModel.DBList))
-					{
-						//TODO eneable buttons
-					}
 				}
 				catch (Exception ex)
 				{
@@ -441,10 +437,6 @@ namespace projektZaliczeniowy
 				try
 				{
 					openFile();
-					if (checkIfEnableButtons(_MainDBViewModel.DBList))
-					{
-						//TODO: enable buttons
-					}
 				}
 				catch (Exception)
 				{
@@ -455,30 +447,7 @@ namespace projektZaliczeniowy
 
 		private void subMenuPrintClick(object sender, RoutedEventArgs e)
 		{
-			try
-			{
-				var printDialog = new PrintDialog();
-				bool? printResult = printDialog.ShowDialog();
-				if (printResult == true)
-				{
-					Size pageSize = new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight);
-					homeDataGrid.Measure(pageSize);
-					if (this.isRecordSearched)
-					{
-						editDataGrid.Arrange(new Rect(editDataGrid.Columns.Count(), _MainDBViewModel.FiltredDBList.Count(), pageSize.Width, pageSize.Height));
-						printDialog.PrintVisual(editDataGrid, Title);
-					}
-					else
-					{
-						homeDataGrid.Arrange(new Rect(homeDataGrid.Columns.Count(), _MainDBViewModel.DBList.Count(), pageSize.Width, pageSize.Height));
-						printDialog.PrintVisual(homeDataGrid, Title);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				messageError(ex, "Error during printing process!");
-			}
+			print();
 		}
 
 		private void subMenuQuitClick(object sender, RoutedEventArgs e)
@@ -490,7 +459,6 @@ namespace projektZaliczeniowy
 		{
 			if (saveDialogCreator())
 			{
-				this.fileSaved = true;
 				Logger.Instance.LogInfo("DataBase file saved");
 				Logger.Instance.LogWarning("User use save as option");
 			}
@@ -500,9 +468,8 @@ namespace projektZaliczeniowy
 		{
 			try
 			{
-				if (saveFileMenuDialog())
+				if (saveFileMenuDialog(false))
 				{
-					this.fileSaved = true;
 					Logger.Instance.LogInfo("DataBase file saved");
 				}
 			}
@@ -514,22 +481,20 @@ namespace projektZaliczeniowy
 
 		private void searchClick(object sender, RoutedEventArgs e)
 		{
-			//TODO:search
 			if (!this.isRecordSearched)
 			{
 				try
 				{
 					if (!string.IsNullOrEmpty(_MainDBViewModel.FilterString))
 					{
-						Logger.Instance.LogInfo(string.Format("User tried to search: {0}", _MainDBViewModel.FilterString));
 						_MainDBViewModel.Search();
-						//_MainDBViewModel.ChangeIDs();
 						editDataGrid.ItemsSource = _MainDBViewModel.FiltredDBList;
 						Logger.Instance.LogInfo(string.Format("Founded {0} record(s)", _MainDBViewModel.FiltredDBList.Count.ToString()));
 						editDataGrid.Items.Refresh();
 						_MainDBViewModel.FilterString = default(string);
 						SearchBox.IsEnabled = false;
 						this.isRecordSearched = true;
+						editSortBtn.IsEnabled = false;
 					}
 				}
 				catch (Exception ex)
@@ -540,13 +505,66 @@ namespace projektZaliczeniowy
 			}
 			else
 			{
-				//_MainDBViewModel.ChangeIDs();
 				editDataGrid.ItemsSource = _MainDBViewModel.DBList;
 				editDataGrid.Items.Refresh();
 				_MainDBViewModel.FiltredDBList.Clear();
 				SearchBox.IsEnabled = true;
 				this.isRecordSearched = false;
+				editSortBtn.IsEnabled = true;
 				Logger.Instance.LogInfo("SearchBox enabled");
+			}
+		}
+
+		private void sortClick(object sender, EventArgs e)
+		{
+			try
+			{
+				if (this.sortCounter == 2)
+				{
+					_MainDBViewModel.FilterString = string.Empty;
+					this.sortCounter = 0;
+					var sortObj = CollectionViewSource.GetDefaultView(editDataGrid.ItemsSource);
+					sortObj.SortDescriptions.Clear();
+					SearchBox.IsEnabled = true;
+					foreach (var col in editDataGrid.Columns)
+					{
+						col.SortDirection = null;
+					}
+				}
+				else
+				{
+					SearchBox.IsEnabled = false;
+					var sortObj = CollectionViewSource.GetDefaultView(editDataGrid.ItemsSource);
+					ListSortDirection direction = ListSortDirection.Ascending;
+					//Drugi klik i zmiana z rosn. na mal.
+					if (this.sortCounter == 0)
+						direction = ListSortDirection.Ascending;
+					else if (this.sortCounter == 1)
+						direction = ListSortDirection.Descending;
+					sortObj.SortDescriptions.Clear();
+					var tmpSort = _MainDBViewModel.Sort();
+					foreach (var item in tmpSort)
+					{
+						AddSortColumn(item, direction);
+					}
+					this.sortCounter++;
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBoxResult result = MessageBox.Show(ex.Message.ToString(), "Empty search result", MessageBoxButton.OK, MessageBoxImage.Stop);
+				Logger.Instance.LogWarning(ex.Message.ToString());
+			}
+		}
+
+		private void AddSortColumn(string sortColumn, ListSortDirection direction)
+		{
+			var sortObj = CollectionViewSource.GetDefaultView(editDataGrid.ItemsSource);
+			sortObj.SortDescriptions.Add(new SortDescription(sortColumn, direction));
+			//Add the sort arrow on the DataGridColumn
+			foreach (var col in editDataGrid.Columns.Where(x => x.SortMemberPath == sortColumn))
+			{
+				col.SortDirection = direction;
 			}
 		}
 
@@ -575,9 +593,8 @@ namespace projektZaliczeniowy
 			{
 				try
 				{
-					if (saveFileMenuDialog())
+					if (saveFileMenuDialog(false))
 					{
-						this.fileSaved = true;
 						Logger.Instance.LogInfo("DataBase file saved");
 					}
 				}
@@ -604,13 +621,14 @@ namespace projektZaliczeniowy
 			{
 				this.Close();
 			}
+			if ((Keyboard.Modifiers == ModifierKeys.Control) && (e.Key == Key.P))
+			{
+				this.print();
+			}
 		}
 
 		#endregion ClickEvents
 
-		private void sortClick(object sender, RoutedEventArgs e)
-		{
-			throw new Exception();
-		}
+		//TODO: reseter -> zostaje po przeładowaniu filterstring i pewnie inne pierdoly
 	}
 }
