@@ -74,9 +74,8 @@
     <Compile Include="EditRecordWindow.xaml.cs">
       <DependentUpon>EditRecordWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="searchRecordWindow.xaml.cs">
-      <DependentUpon>searchRecordWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="InverseBooleanConverter.cs" />
+    <Compile Include="SelectedToBooleanConverter.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Page Include="AddRecordWindow.xaml">
       <SubType>Designer</SubType>
@@ -105,10 +104,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="searchRecordWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace projektZaliczeniowy
 {
@@ -22,9 +23,9 @@ namespace projektZaliczeniowy
 
 		public EditRecordWindow(DBStructureViewModel tmpSelectedRecord)
 		{
+			SelectedRecord = tmpSelectedRecord;
 			InitializeComponent();
 			editNameText.Focus();
-			SelectedRecord = tmpSelectedRecord;
 			selectedToEditConverter(tmpSelectedRecord);
 			Logger.Instance.LogInfo("editRecord window initialization completed");
 		}
@@ -57,17 +58,55 @@ namespace projektZaliczeniowy
 		private DBStructureViewModel editSaveRecord()
 		{
 			Logger.Instance.LogInfo("Trying to save record");
-			this.EditedRecord = new DBStructureViewModel()
+			if (!convertStringToInt(editPeselText.Text))
 			{
-				Name = editNameText.Text,
-				FamilyName = editFamilyText.Text,
-				Phone = editPhoneText.Text,
-				BirthDate = editBirthText.DisplayDate.Date,
-				Pesel = editPeselText.Text,
-				Id = this.SelectedRecord.Id
-			};
-			Logger.Instance.LogInfo(string.Format("User edited record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", EditedRecord.FamilyName, EditedRecord.Name, EditedRecord.Phone, EditedRecord.BirthDate, EditedRecord.Pesel));
+				editErrors.Text = "Pesel! - use numbers";
+				editerrorBlock.Text = "Error(s):";
+				editErrors.Foreground = Brushes.Red;
+				editerrorBlock.Foreground = Brushes.Red;
+				Logger.Instance.LogError("Error in pesel!");
+				if (!convertStringToInt(editPhoneText.Text))
+				{
+					editErrors.Text = "Pesel! Phone! - use numbers";
+					Logger.Instance.LogError("Error in phone!");
+				}
+			}
+			else if (!convertStringToInt(editPhoneText.Text))
+			{
+				editErrors.Text = "Phone! - use numbers";
+				editerrorBlock.Text = "Error(s):";
+				editErrors.Foreground = Brushes.Red;
+				editerrorBlock.Foreground = Brushes.Red;
+				Logger.Instance.LogError("Error in phone!");
+			}
+			else
+			{
+				this.EditedRecord = new DBStructureViewModel()
+				{
+					Name = editNameText.Text,
+					FamilyName = editFamilyText.Text,
+					BirthDate = editBirthText.DisplayDate.Date,
+					Pesel = editPeselText.Text,
+					Phone = editPhoneText.Text,
+					Id = this.SelectedRecord.Id
+				};
+				Logger.Instance.LogInfo(string.Format("User edited record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", EditedRecord.FamilyName, EditedRecord.Name, EditedRecord.Phone, EditedRecord.BirthDate, EditedRecord.Pesel));
+			}
 			return this.EditedRecord;
+		}
+
+		private bool convertStringToInt(string tmpText)
+		{
+			int tmp;
+			try
+			{
+				tmp = Convert.ToInt32(tmpText);
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
 
 		#endregion Methods
@@ -82,7 +121,8 @@ namespace projektZaliczeniowy
 		private void editButtonSave_Click(object sender, RoutedEventArgs e)
 		{
 			editSaveRecord();
-			this.Close();
+			if (this.EditedRecord != null)
+				this.Close();
 		}
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)

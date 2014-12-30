@@ -33,7 +33,7 @@
 							x:Name="grid"
 							CornerRadius="0 0 0 15"
 							Width="64"
-							Padding="7.5 7.5 2.5 2.5"
+							Padding="7.5 7.5 3.5 3.5"
 							Height="64"
 							Background="#FF8FC377">
 							<ContentPresenter
@@ -53,6 +53,8 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		<local:InverseBooleanConverter x:Key="BoolConverter" />
+		<local:SelectedToBooleanConverter x:Key="SelectedConverter" />
 	</Window.Resources>
 
 	<Grid
@@ -109,8 +111,8 @@
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
 					Click="subMenuSaveClick"
-					IsEnabled="False"
-					InputGestureText="Ctrl+S" />
+					InputGestureText="Ctrl+S"
+					IsEnabled="{Binding Path=fileSaved, Converter={StaticResource ResourceKey=BoolConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 				<MenuItem
 					x:Name="subMenuSaveAs"
 					Header="Save as"
@@ -118,8 +120,8 @@
 					Background="#FF4E4E50"
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
-					Click="subMenuSaveClick"
-					IsEnabled="False" />
+					Click="subMenuSaveAsClick"
+					IsEnabled="{Binding fileOpened, UpdateSourceTrigger=PropertyChanged}" />
 				<Separator
 					HorizontalAlignment="Left"
 					Height="2" />
@@ -131,7 +133,8 @@
 					Foreground="White"
 					BorderBrush="#FF4E4E50"
 					Click="subMenuPrintClick"
-					IsEnabled="False" />
+					InputGestureText="Ctrl+P"
+					IsEnabled="{Binding fileOpened,UpdateSourceTrigger=PropertyChanged}" />
 				<MenuItem
 					x:Name="subMenuQuit"
 					Header="Quit"
@@ -142,12 +145,13 @@
 					Click="subMenuQuitClick"
 					InputGestureText="Ctrl+Q" />
 			</MenuItem>
+			<!--
 			<MenuItem
 				x:Name="MenuSort"
 				Header="Sort database" />
 			<MenuItem
 				x:Name="MenuSearch"
-				Header="Search record" />
+				Header="Search record" />-->
 			<MenuItem
 				x:Name="menuHelp"
 				Header="Help"
@@ -179,11 +183,19 @@
 				x:Name="homeTab"
 				HorizontalAlignment="Stretch"
 				ToolTip="Home tab"
-				IsEnabled="False" Margin="-2,-2,0,2">
+				IsEnabled="False"
+				Margin="-2,-2,0,2">
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/book.png"
-						Stretch="Fill" />
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+								<TranslateTransform />
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
@@ -210,7 +222,7 @@
 							AutoGenerateColumns="False"
 							ItemsSource="{Binding DBList, Mode=TwoWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
-							FontSize="18"
+							FontSize="16"
 							AlternatingRowBackground="#FF8FC377">
 							<!--AlternatingRowBackground="DarkOliveGreen"-->
 							<DataGrid.Columns>
@@ -280,7 +292,14 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/pen.png"
-						Stretch="Fill" />
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+								<TranslateTransform />
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
@@ -309,8 +328,9 @@
 							SelectionMode="Single"
 							ItemsSource="{Binding DBList, Mode=OneWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
-							FontSize="18"
-							AlternatingRowBackground="#FF8FC377" MouseDoubleClick="editDataGrid_MouseDoubleClick">
+							FontSize="16"
+							AlternatingRowBackground="#FF8FC377"
+							MouseDoubleClick="editDataGrid_MouseDoubleClick">
 							<DataGrid.Columns>
 								<DataGridTextColumn
 									x:Name="editID"
@@ -368,7 +388,8 @@
 							Margin="85,494,0,10"
 							Padding="3"
 							Width="40"
-							Click="editSelectedClick">
+							Click="editSelectedClick"
+							IsEnabled="{Binding DBSelectedItem, Converter={StaticResource ResourceKey=SelectedConverter},UpdateSourceTrigger=PropertyChanged}">
 							<DockPanel ToolTip="Edit record">
 								<Image Source="Resources/menu/pen.png" />
 							</DockPanel>
@@ -378,7 +399,8 @@
 							Margin="140,494,0,10"
 							Padding="3"
 							Width="40"
-							Click="deleteSelectedClick">
+							Click="deleteSelectedClick"
+							IsEnabled="{Binding DBSelectedItem, Converter={StaticResource ResourceKey=SelectedConverter},UpdateSourceTrigger=PropertyChanged}">
 							<DockPanel ToolTip="Deleted record">
 								<Image Source="Resources/menu/x.png" />
 							</DockPanel>
@@ -410,7 +432,8 @@
 							Margin="461,494,0,10"
 							Padding="3"
 							Width="40"
-							Click="sortClick">
+							Click="sortClick"
+							x:Name="editSortBtn">
 							<DockPanel ToolTip="Sorting record(s)">
 								<Image Source="Resources/menu/sort.png" />
 							</DockPanel>
@@ -438,7 +461,14 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/bin.png"
-						Stretch="Fill" />
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+								<TranslateTransform />
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
@@ -467,7 +497,7 @@
 							SelectionMode="Single"
 							ItemsSource="{Binding DeletedDBList, Mode=TwoWay}"
 							SelectedItem="{Binding DeleteDBSelectedItem, Mode=TwoWay}"
-							FontSize="18"
+							FontSize="16"
 							AlternatingRowBackground="#FF8FC377"
 							IsReadOnly="False">
 							<DataGrid.Columns>
@@ -511,7 +541,8 @@
 							Margin="40,494,0,10"
 							Padding="3"
 							Width="40"
-							Click="binTabRestoreClick">
+							Click="binTabRestoreClick"
+							IsEnabled="{Binding DeleteDBSelectedItem, Converter={StaticResource ResourceKey=SelectedConverter},UpdateSourceTrigger=PropertyChanged}">
 							<DockPanel ToolTip="Restore selected record">
 								<Image Source="Resources/menu/refresh.png" />
 							</DockPanel>
@@ -521,7 +552,8 @@
 							Margin="108,494,0,10"
 							Padding="3"
 							Width="40"
-							Click="binTabDeleteClick">
+							Click="binTabDeleteClick"
+							IsEnabled="{Binding DeleteDBSelectedItem, Converter={StaticResource ResourceKey=SelectedConverter},UpdateSourceTrigger=PropertyChanged}">
 							<DockPanel ToolTip="Delete selected record">
 								<Image Source="Resources/menu/x.png" />
 							</DockPanel>
@@ -557,7 +589,14 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/cog.png"
-						Stretch="Fill" Margin="1,3,-1,-3" />
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+								<TranslateTransform />
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
@@ -572,7 +611,14 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/list.png"
-						Stretch="Fill" />
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						<Image.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+								<TranslateTransform />
+							</TransformGroup>
+						</Image.RenderTransform>
+					</Image>
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"

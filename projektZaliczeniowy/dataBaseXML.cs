@@ -94,7 +94,6 @@ namespace projektZaliczeniowy
 		/// <param name="dataBase">main list DB structure</param>
 		private List<DBStructureViewModel> dateBaseLoader(XDocument dataBaseFileX)
 		{
-			//TODO: walidacja danych tutaj?
 			try
 			{
 				var tmpXML = dataBaseFileX.Element("persons");

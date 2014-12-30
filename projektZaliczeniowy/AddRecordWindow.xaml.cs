@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace projektZaliczeniowy
 {
@@ -47,17 +48,40 @@ namespace projektZaliczeniowy
 		{
 			try
 			{
-				//TODO: Walidacja etc
-				this.AddedRecord = new DBStructureViewModel()
+				if (!convertStringToInt(addPeselText.Text))
 				{
-					Name = addNameText.Text,
-					FamilyName = addFamilyText.Text,
-					Phone = addPhoneText.Text,
-					BirthDate = addBirthText.DisplayDate.Date,
-					Pesel = addPeselText.Text,
-					Id = ++InnerID
-				};
-				Logger.Instance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", AddedRecord.FamilyName, AddedRecord.Name, AddedRecord.Phone, AddedRecord.BirthDate, AddedRecord.Pesel));
+					AddErrorText.Text = "Pesel! - use numbers";
+					AddErrorBlock.Text = "Error(s):";
+					AddErrorText.Foreground = Brushes.Red;
+					AddErrorBlock.Foreground = Brushes.Red;
+					Logger.Instance.LogError("Error in pesel!");
+					if (!convertStringToInt(addPhoneText.Text))
+					{
+						AddErrorText.Text = "Pesel! Phone! - use numbers";
+						Logger.Instance.LogError("Error in phone!");
+					}
+				}
+				else if (!convertStringToInt(addPhoneText.Text))
+				{
+					AddErrorText.Text = "Phone! - use numbers";
+					AddErrorBlock.Text = "Error(s):";
+					AddErrorText.Foreground = Brushes.Red;
+					AddErrorBlock.Foreground = Brushes.Red;
+					Logger.Instance.LogError("Error in phone!");
+				}
+				else
+				{
+					this.AddedRecord = new DBStructureViewModel()
+					{
+						Name = addNameText.Text,
+						FamilyName = addFamilyText.Text,
+						Phone = addPhoneText.Text,
+						BirthDate = addBirthText.DisplayDate.Date,
+						Pesel = addPeselText.Text,
+						Id = ++InnerID
+					};
+					Logger.Instance.LogInfo(string.Format("User added record with:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", AddedRecord.FamilyName, AddedRecord.Name, AddedRecord.Phone, AddedRecord.BirthDate, AddedRecord.Pesel));
+				}
 				return this.AddedRecord;
 			}
 			catch (Exception ex)
@@ -67,10 +91,25 @@ namespace projektZaliczeniowy
 			}
 		}
 
+		private bool convertStringToInt(string tmpText)
+		{
+			int tmp;
+			try
+			{
+				tmp = Convert.ToInt32(tmpText);
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
 		private void addNewRecord()
 		{
 			userRecord();
-			this.Close();
+			if (this.AddedRecord != null)
+				this.Close();
 		}
 
 		#endregion Methods

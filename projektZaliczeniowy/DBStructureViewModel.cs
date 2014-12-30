@@ -4,8 +4,6 @@ namespace projektZaliczeniowy
 {
 	public class DBStructureViewModel : ViewModelBase
 	{
-		//private static int GlobalIdCounter = 0;//TODO: przerobić to bo ID się źle generuje
-
 		#region contructor
 
 		public DBStructureViewModel()
