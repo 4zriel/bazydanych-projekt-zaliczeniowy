@@ -11,6 +11,7 @@ namespace projektZaliczeniowy
 			if (PropertyChanged != null)
 			{
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+				Logger.Instance.LogInfo(string.Format("Property changed {0}", propertyName));
 			}
 		}
 	}
