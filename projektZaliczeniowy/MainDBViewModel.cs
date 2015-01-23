@@ -313,8 +313,9 @@ namespace projektZaliczeniowy
 				foreach (var item in DeletedDBList)
 				{
 					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
-					DeletedDBList.Remove(item);
+					//DeletedDBList.Remove(item);
 				}
+				_DeletedDBList.Clear();
 				fileSaved = false;
 				return true;
 			}
@@ -350,8 +351,9 @@ namespace projektZaliczeniowy
 				{
 					DBList.Add(item);
 					Logger.Instance.LogInfo(string.Format("Restored record is:\n\tFamilyName: {0}\n\tName: {1}\n\tPhone: {2}\n\tBirthDate: {3}\n\tPesel: {4}", item.FamilyName, item.Name, item.Phone, item.BirthDate, item.Pesel));
-					DeletedDBList.Remove(item);
+					//DeletedDBList.Remove(item);
 				}
+				_DeletedDBList.Clear();
 				fileSaved = false;
 				return true;
 			}

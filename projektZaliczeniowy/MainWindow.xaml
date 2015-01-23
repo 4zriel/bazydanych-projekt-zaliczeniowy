@@ -112,7 +112,7 @@
 					BorderBrush="#FF4E4E50"
 					Click="subMenuSaveClick"
 					InputGestureText="Ctrl+S"
-					IsEnabled="{Binding Path=fileSaved, Converter={StaticResource ResourceKey=BoolConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+					IsEnabled="{Binding Path=fileSaved, Converter={StaticResource ResourceKey=BoolConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 				<MenuItem
 					x:Name="subMenuSaveAs"
 					Header="Save as"
@@ -199,7 +199,8 @@
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
-					Margin="2.5">
+					Margin="2.5"
+					VerticalAlignment="Stretch">
 					<Grid.RowDefinitions>
 						<RowDefinition
 							Height="9*" />
@@ -212,9 +213,9 @@
 							x:Name="homeDataGrid"
 							HorizontalAlignment="Stretch"
 							VerticalAlignment="Top"
-							Height="536"
+							Height="487"
 							Margin="10,0"
-							IsEnabled="False"
+							IsEnabled="True"
 							CanUserReorderColumns="False"
 							CanUserResizeColumns="False"
 							IsReadOnly="True"
@@ -222,8 +223,10 @@
 							AutoGenerateColumns="False"
 							ItemsSource="{Binding DBList, Mode=TwoWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
-							FontSize="16"
-							AlternatingRowBackground="#FF8FC377">
+							FontSize="15"
+							AlternatingRowBackground="#FF8FC377"
+							ScrollViewer.VerticalScrollBarVisibility="Auto"
+							ScrollViewer.CanContentScroll="True">
 							<!--AlternatingRowBackground="DarkOliveGreen"-->
 							<DataGrid.Columns>
 								<DataGridTextColumn
@@ -245,7 +248,7 @@
 								<DataGridTextColumn
 									x:Name="homeDate"
 									Header="Birth date"
-									Width="100"
+									Width="88"
 									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="homePhone"
@@ -303,7 +306,9 @@
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
-					Margin="2.5">
+					Margin="2.5"
+					VerticalAlignment="Stretch"
+					IsEnabled="True">
 					<Grid.RowDefinitions>
 						<RowDefinition
 							Height="9*"></RowDefinition>
@@ -316,9 +321,9 @@
 							x:Name="editDataGrid"
 							HorizontalAlignment="Stretch"
 							VerticalAlignment="Top"
-							Height="536"
+							Height="487"
 							Margin="10,0"
-							IsEnabled="False"
+							IsEnabled="True"
 							CanUserReorderColumns="False"
 							CanUserResizeColumns="False"
 							CanUserResizeRows="False"
@@ -328,9 +333,10 @@
 							SelectionMode="Single"
 							ItemsSource="{Binding DBList, Mode=OneWay}"
 							SelectedItem="{Binding DBSelectedItem, Mode=TwoWay}"
-							FontSize="16"
+							FontSize="15"
 							AlternatingRowBackground="#FF8FC377"
-							MouseDoubleClick="editDataGrid_MouseDoubleClick">
+							MouseDoubleClick="editDataGrid_MouseDoubleClick"
+							ScrollViewer.VerticalScrollBarVisibility="Auto">
 							<DataGrid.Columns>
 								<DataGridTextColumn
 									x:Name="editID"
@@ -353,7 +359,7 @@
 								<DataGridTextColumn
 									x:Name="editDate"
 									Header="Birth date"
-									Width="100"
+									Width="88"
 									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}"
 									IsReadOnly="True" />
 								<DataGridTextColumn
@@ -461,7 +467,7 @@
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/bin.png"
-						Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+						Stretch="Fill" RenderTransformOrigin="0.5,0.5" Margin="-1,3,1,-3">
 						<Image.RenderTransform>
 							<TransformGroup>
 								<ScaleTransform ScaleX="0.95" ScaleY="0.95" />
@@ -472,7 +478,10 @@
 				</TabItem.Header>
 				<Grid
 					Background="#FF4E4E50"
-					Margin="2.5">
+					Margin="2.5"
+					VerticalAlignment="Stretch"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 ScrollViewer.CanContentScroll="True">
 					<Grid.RowDefinitions>
 						<RowDefinition
 							Height="9*"></RowDefinition>
@@ -485,9 +494,9 @@
 							x:Name="binDataGrid"
 							HorizontalAlignment="Stretch"
 							VerticalAlignment="Top"
-							Height="536"
+							Height="487"
 							Margin="10,0"
-							IsEnabled="False"
+							IsEnabled="True"
 							CanUserReorderColumns="False"
 							CanUserResizeColumns="False"
 							CanUserResizeRows="False"
@@ -497,9 +506,11 @@
 							SelectionMode="Single"
 							ItemsSource="{Binding DeletedDBList, Mode=TwoWay}"
 							SelectedItem="{Binding DeleteDBSelectedItem, Mode=TwoWay}"
-							FontSize="16"
+							FontSize="15"
 							AlternatingRowBackground="#FF8FC377"
-							IsReadOnly="False">
+							IsReadOnly="False"
+							VerticalScrollBarVisibility="Visible"
+							ScrollViewer.VerticalScrollBarVisibility="Auto">
 							<DataGrid.Columns>
 								<DataGridTextColumn
 									x:Name="binID"
@@ -519,7 +530,7 @@
 								<DataGridTextColumn
 									x:Name="binDate"
 									Header="Birth date"
-									Width="100"
+									Width="88"
 									Binding="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" />
 								<DataGridTextColumn
 									x:Name="binPhone"
@@ -585,7 +596,8 @@
 				x:Name="cfgTab"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Top"
-				ToolTip="Configuration tab">
+				ToolTip="Configuration tab"
+				IsEnabled="False">
 				<TabItem.Header>
 					<Image
 						Source="Resources/menu/cog.png"
@@ -601,6 +613,28 @@
 				<Grid
 					Background="#FF4E4E50"
 					Margin="0,-3,0,-2">
+					<!--
+					<Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="187" Margin="165,42,0,0" Stroke="Black" VerticalAlignment="Top" Width="390" />
+					<Label Content="User Name:"
+						   HorizontalAlignment="Left"
+						   Margin="184,106,0,0"
+						   VerticalAlignment="Top" Width="123" />
+					<Label Content="Password:"
+						   HorizontalAlignment="Left"
+						   Margin="184,137,0,0"
+						   VerticalAlignment="Top" Width="123" />
+					<TextBox x:Name="cfgUserText"
+							 HorizontalAlignment="Left"
+							 Height="26" Margin="312,106,0,0"
+							 TextWrapping="Wrap"
+							 VerticalAlignment="Top" Width="226" />
+					<TextBox x:Name="cfgPass"
+							 HorizontalAlignment="Left"
+							 Height="26" Margin="312,137,0,0"
+							 TextWrapping="Wrap"
+							 VerticalAlignment="Top" Width="226" />
+					<Button x:Name="cfgLogin" Content="Login" HorizontalAlignment="Left" Margin="312,188,0,0" VerticalAlignment="Top" Width="75" Click="loginClick" />
+					<TextBlock HorizontalAlignment="Left" Height="45" Margin="184,56,0,0" TextWrapping="Wrap" Text="Please enter your user name and password" VerticalAlignment="Top" Width="354" TextAlignment="Center" />-->
 				</Grid>
 			</TabItem>
 			<TabItem
