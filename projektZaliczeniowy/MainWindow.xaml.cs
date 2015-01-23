@@ -350,7 +350,10 @@ namespace projektZaliczeniowy
 
 		private void binTabRestoreAllClick(object sender, RoutedEventArgs e)
 		{
-			_MainDBViewModel.RestoreAll();
+			if (_MainDBViewModel.RestoreAll())
+			{
+				checkIfDisableBin();
+			}
 			_MainDBViewModel.ChangeIDs();
 		}
 
@@ -398,7 +401,8 @@ namespace projektZaliczeniowy
 			int tmp = default(int);
 			if (_MainDBViewModel.DBList.Count != 0)
 			{
-				tmp = _MainDBViewModel.DBList.Last().Id;
+				//tmp = _MainDBViewModel.DBList.Last().Id;
+				tmp = _MainDBViewModel.DBList.Count;
 			}
 			var addWindow = new AddRecordWindow(tmp);
 			addWindow.Owner = this;
@@ -406,6 +410,7 @@ namespace projektZaliczeniowy
 			if (addWindow.Added)
 			{
 				_MainDBViewModel.AddNewRecord(addWindow.AddedRecord);
+				//_MainDBViewModel.ChangeIDs();
 			}
 		}
 
@@ -519,6 +524,8 @@ namespace projektZaliczeniowy
 		{
 			try
 			{
+				var tmpSort = _MainDBViewModel.Sort();
+
 				if (this.sortCounter == 2)
 				{
 					_MainDBViewModel.FilterString = string.Empty;
@@ -542,7 +549,7 @@ namespace projektZaliczeniowy
 					else if (this.sortCounter == 1)
 						direction = ListSortDirection.Descending;
 					sortObj.SortDescriptions.Clear();
-					var tmpSort = _MainDBViewModel.Sort();
+					tmpSort = _MainDBViewModel.Sort();
 					foreach (var item in tmpSort)
 					{
 						AddSortColumn(item, direction);
@@ -628,6 +635,10 @@ namespace projektZaliczeniowy
 		}
 
 		#endregion ClickEvents
+
+		private void loginClick(object sender, RoutedEventArgs e)
+		{
+		}
 
 		//TODO: reseter -> zostaje po przeładowaniu filterstring i pewnie inne pierdoly
 	}

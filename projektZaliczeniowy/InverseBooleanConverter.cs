@@ -19,7 +19,9 @@ namespace projektZaliczeniowy
 		public object ConvertBack(object value, Type targetType, object parameter,
 			System.Globalization.CultureInfo culture)
 		{
-			throw new NotSupportedException();
+			if (targetType != typeof(bool))
+				throw new InvalidOperationException("The target must be a boolean");
+			return !(bool)value;
 		}
 
 		#endregion IValueConverter Members
