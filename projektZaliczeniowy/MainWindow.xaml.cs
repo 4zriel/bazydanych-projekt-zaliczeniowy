@@ -16,7 +16,7 @@ namespace projektZaliczeniowy
 	{
 		#region properties
 
-		public string Version = "0.8a";
+		public string Version = "1.8a";
 		public MainDBViewModel _MainDBViewModel = new MainDBViewModel();
 		private bool isRecordSearched = false;
 		private int sortCounter = 0;

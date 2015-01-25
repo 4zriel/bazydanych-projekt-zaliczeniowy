@@ -3,7 +3,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:projektZaliczeniowy"
-	Title="Projek Zaliczeniowy"
+	Title="Projekt Zaliczeniowy"
 	Height="600"
 	Width="800"
 	Icon="Resources/main.ico"
