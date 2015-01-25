@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "projektZaliczeniowy", "projektZaliczeniowy\projektZaliczeniowy.csproj", "{460AAA4B-047A-4637-B0C4-D07A940CF6B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4B560A45-BC50-44C6-BE5C-BEBB17E339F7}"
 	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
 		..\..\Documents\Visual Studio 2013\Code Snippets\Visual C#\My Code Snippets\vm_property.snippet = ..\..\Documents\Visual Studio 2013\Code Snippets\Visual C#\My Code Snippets\vm_property.snippet
 	EndProjectSection
 EndProject
